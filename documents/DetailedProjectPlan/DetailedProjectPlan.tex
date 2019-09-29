@@ -11,9 +11,9 @@
 \maketitle
  
 \section{Background}
-Artificial intelligence is an area of computer science which focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Nowadays we see artificial intelligence everywhere from spam filters to movie recommendations to virtual assistants to self-driving. Moreover, customers are demanding more and more smart capabilities in their machines.
+Artificial intelligence is an area of computer science which focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Machine learning, specifically, is a subset of artificial intelligence which learns from data. \cite{Mitchell1997} Nowadays we see artificial intelligence everywhere from spam filters \cite{Androutsopoulos2000} to movie recommendations \cite{lekakos2008hybrid} to virtual assistants to self-driving.
 
-This leads to its own set of software development challenges; Nvidia summarises them with the PLASTER framework:
+Customers are demanding smarter and smarter capabilities in their machines which leads to its own set of software development challenges; Nvidia summarises them with the PLASTER \cite{Teich2018} framework :
 \begin{itemize}
   \item Programmability
   \item Latency
@@ -24,33 +24,38 @@ This leads to its own set of software development challenges; Nvidia summarises 
   \item Rate of Learning
 \end{itemize}
 
-We could further divide these concerns into training and inference. Training is the phase of development where we train our model whereas inference is when we put the model in production ready for taking inputs and providing outputs.
+The development lifecycle of any machine learning application can be summarized as follows:
+\begin{enumerate}
+  \item Training (Learning from data)
+  \item Inference (Returning an output given a single input)
+\end{enumerate}
 
-According to research, customer satisfaction drops rapidly if it takes longer than half a second for a response. For a great customer experience, latency and throughput are really important during inference.  There are many ways latency and throughput can be improved.
+End-users of machine learning applications are only concerned with inference. For example, for virtual assistants training may take several days going through tonnes of voice recordings and figuring out what sounds correspond to which words. However, the customer is only concerned with sending their own voice instruction and expecting the assistant to understand their instruction. In this scenario, the latter is inference and real-time response (low latency) is expected. Moreover, the virtual assistant should be able to cope up with large traffic as well (high throughput).
+
+Therefore, as also mentioned in the PLASTER framework \cite{Teich2018}, latency and throughput are highly important for any artificial intelligence application.
+
+It's typical of such applications to have pipelines made out of several compute-intensive tasks. Some of them could even be run in parallel. To make such applications faster, it makes sense to distribute these tasks across several machines and that is exactly where distributed architecture could shine.
 
 \section{Objective}
-In this project, we aim to improve latency and throughput by implementing and deploying an AI application on a distributed system. As a proof of concept, we will choose an AI application which has a complex inference pipeline and distribute the tasks over  a distributed system.
+The project's aim is to improve latency and throughput of AI applications by implementing and deploying them on a distributed system. As a proof of concept, an AI application will be chosen which has a complex inference pipeline and it will be developed on a distributed system.
+
+To prove that a distributed architecture can indeed improve latency and throughput, performance will be compared across systems of various specifications:
+\begin{enumerate}
+  \item 1 node for n tasks (baseline)
+  \item less than n nodes for n tasks
+  \item n nodes for n tasks (optimum)
+\end{enumerate}
 
 \section{Methodology}
-First of all, we will choose an AI application. A few prospective ones are as follows:
-\begin{itemize}
-  \item Smart Driving
-  \item Stock Price Prediction
-\end{itemize}
 
-Second, we will develop a basic version of the application on our systems.
-
-Third, we will deploy the model on cloud.
-
-Fourth, when we are satisfied with the output we will convert the application in such a way that it can work on a distributed system. We will use python RPC.
-
-Fifth, we will manually deploy the system onto cloud so we can figure out the details.
-
-Sixth, we will devise a method to programmatically instantiate cloud resources and deploy the model. This way we can repeatedly deploy our application in the future without having to waste time.
-
-Seventh, we will compare the latency and throughput of our application on monoliths and different sizes of distributed systems.
-
-Our expectation is that the latency and throughput should vastly improve with a distributed system.
+\begin{enumerate}
+  \item Choose AI Application i.e. Smart Driving, Stock Price Prediction, etc.
+  \item Develop and run basic inference pipeline on a monolith architecture.
+  \item Convert the pipeline to run using RPC (remote procedure call) on one server.
+  \item Deploy the above on multiple servers.
+  \item Devise a method to programmatically instantiate cloud resources and deploy model.
+  \item Compare latency and throughput of model on distributed systems of various specifications.
+\end{enumerate}
 
 \section{Schedule \& Milestones}
 \renewcommand{\arraystretch}{2}
