@@ -1,7 +1,9 @@
 \documentclass{article}
 \usepackage[style=numeric]{biblatex}
 \usepackage{multirow}
+\usepackage{graphicx}
 \addbibresource{references.bib}
+\graphicspath{ {./assets/} }
  
 \title{FYP 2019-20 Detailed Project Plan \\ Building new AI applications for a distributed AI serving system}
 \author{Waqas Ali\\{\small Supervisor: Dr. Heming Cui}\\{\small Mentor: Shixiong Zhao}}
@@ -13,7 +15,7 @@
 \section{Background}
 Artificial intelligence is an area of computer science which focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Machine learning, specifically, is a subset of artificial intelligence which learns from data. \cite{Mitchell1997} Nowadays we see artificial intelligence everywhere from spam filters \cite{Androutsopoulos2000} to movie recommendations \cite{lekakos2008hybrid} to virtual assistants to self-driving.
 
-Customers are demanding smarter and smarter capabilities in their machines which leads to its own set of software development challenges; Nvidia summarises them with the PLASTER \cite{Teich2018} framework :
+Customers are demanding smarter and smarter capabilities in their machines which leads to its own set of software development challenges; Nvidia summarises them with the PLASTER \cite{Teich2018} framework:
 \begin{itemize}
   \item Programmability
   \item Latency
@@ -24,17 +26,26 @@ Customers are demanding smarter and smarter capabilities in their machines which
   \item Rate of Learning
 \end{itemize}
 
-The development lifecycle of any machine learning application can be summarized as follows:
+These challenges arise during the development lifecycle of any machine learning application. A machine learning application has two main stages:
 \begin{enumerate}
   \item Training (Learning from data)
-  \item Inference (Returning an output given a single input)
+  \item Inference (Given an input, predicting an output)
 \end{enumerate}
 
-End-users of machine learning applications are only concerned with inference. For example, for virtual assistants training may take several days going through tonnes of voice recordings and figuring out what sounds correspond to which words. However, the customer is only concerned with sending their own voice instruction and expecting the assistant to understand their instruction. In this scenario, the latter is inference and real-time response (low latency) is expected. Moreover, the virtual assistant should be able to cope up with large traffic as well (high throughput).
+For example, for virtual assistants, training the voice recognition model involves exposing the program to hundreds of voice recordings and letting it figure out what sounds correspond to which words. Inference, however, is inputting a new voice recording and transcribing it using the trained voice recognition model.
 
-Therefore, as also mentioned in the PLASTER framework \cite{Teich2018}, latency and throughput are highly important for any artificial intelligence application.
+End-users of machine learning applications are only concerned with inference and they expect real-time response.
 
-It's typical of such applications to have pipelines made out of several compute-intensive tasks. Some of them could even be run in parallel. To make such applications faster, it makes sense to distribute these tasks across several machines and that is exactly where distributed architecture could shine.
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{StockPriceServiceBasic.pdf}
+  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers. C6 is a caching layer. C7, C8, C9, C10 \& C11 are ML models which compete against each other. C4 is a sentiment analyzer whose results are taken into account for price prediction.}
+  \label{fig:StockPriceServiceBasic}
+\end{figure}
+
+As AI application pipelines get complex, inference can take a long time. For instance, a stock price prediction service (Figure \ref{fig:StockPriceServiceBasic}) involves several steps. On a monolith architecture, all tasks have to be done sequentially (even if they are independent of each other). This could take a long time and hence increase the latency. Moreover, until all tasks for a specific request have finished, processing for a new request cannot be started. Thus, the service cannot handle high number of requests in a given time period i.e. throughput.
+
+This is exactly the kind of situation where a distributed system could shine. By deploying several servers which could independently accomplish the pipeline tasks above, theoretically we can improve the latency and throughput of an AI application (concerns which were highlighted in the PLASTER framework \cite{Teich2018}).
 
 \section{Objective}
 The project's aim is to improve latency and throughput of AI applications by implementing and deploying them on a distributed system. As a proof of concept, an AI application will be chosen which has a complex inference pipeline and it will be developed on a distributed system.
