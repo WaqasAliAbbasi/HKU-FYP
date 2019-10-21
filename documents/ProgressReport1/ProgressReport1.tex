@@ -1,17 +1,53 @@
-\documentclass{article}
+\documentclass{report}
 \usepackage[style=numeric]{biblatex}
 \usepackage{multirow}
 \usepackage{graphicx}
 \addbibresource{references.bib}
 \graphicspath{ {../assets/} }
- 
-\title{FYP 2019-20 Detailed Project Plan \\ Building new AI applications for a distributed AI serving system}
+
+\def\frontmatter{%
+    \pagenumbering{roman}
+    \setcounter{page}{1}
+    \renewcommand{\thesection}{\Roman{section}}
+}%
+
+\def\mainmatter{%
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+    \setcounter{section}{0}
+    \renewcommand{\thesection}{\arabic{section}}
+}%
+
+\def\backmatter{%
+    \setcounter{section}{0}
+    \renewcommand{\thesection}{\Alph{section}}
+}%
+
+\title{Progress Report 1 \\ Building new AI applications for a distributed AI serving system}
 \author{Waqas Ali\\{\small Supervisor: Dr. Heming Cui}\\{\small Mentor: Shixiong Zhao}}
 \date{\today}
  
 \begin{document}
+\frontmatter
 \maketitle
- 
+
+\addcontentsline{toc}{chapter}{Abstract}
+\begin{abstract}
+abstract-text
+\end{abstract}
+
+\tableofcontents
+
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+
+\mainmatter
+
+\chapter{Introduction}
+
 \section{Background}
 Artificial intelligence is an area of computer science which focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Machine learning, specifically, is a subset of artificial intelligence which learns from data. \cite{Mitchell1997} Nowadays we see artificial intelligence everywhere from spam filters \cite{Androutsopoulos2000} to movie recommendations \cite{lekakos2008hybrid} to virtual assistants to self-driving.
 
@@ -57,8 +93,7 @@ To prove that a distributed architecture can indeed improve latency and throughp
   \item n nodes for n tasks (optimum)
 \end{enumerate}
 
-\section{Methodology}
-
+\chapter{Methodology}
 \begin{enumerate}
   \item Choose AI Application i.e. Smart Driving, Stock Price Prediction, etc.
   \item Develop and run basic inference pipeline on a monolith architecture.
@@ -68,27 +103,43 @@ To prove that a distributed architecture can indeed improve latency and throughp
   \item Compare latency and throughput of model on distributed systems of various specifications.
 \end{enumerate}
 
-\section{Schedule \& Milestones}
-\renewcommand{\arraystretch}{2}
-\begin{tabular}{ |l|l| } 
-\hline
-\multicolumn{2}{|c|}{2019} \\ \hline
-\multirow{2}{*}{October} & Choose \& Design AI application to work on \\
- & Develop a basic inference pipeline on a monolithic architecture \\ \hline
-November & Convert pipeline to work on a distributed system using RPC \\ \hline
-December & Manually deploy pipeline to distributed architecture on cloud \\ \hline
-\multicolumn{2}{|c|}{2020} \\ \hline
-\multirow{3}{*}{January} & Programmatically instantiate cloud resources and deploy model \\
- & First Presentation \\
- & Detailed interim report \\ \hline
-February     & Vary deployments by cloud resources and measure latency/throughput on each  \\ \hline
-March     & Enhance AI inference pipeline by adding more steps  \\ \hline
-\multirow{3}{*}{April} & Finalize implementation \\
- & Final Presentation \\
- & Final Report \\ \hline
-\end{tabular}
-\renewcommand{\arraystretch}{1}
+\chapter{Current Status}
+Current status. Evaluation of progress.
 
+\chapter{Schedule}
+\begin{table}[h!]
+  \begin{center}
+    \caption{Project Schedule}
+    \label{tab:table1}
+    \begin{tabular}{ |l|l| } 
+      \hline
+      \multicolumn{2}{|c|}{2019} \\ \hline
+      \multirow{2}{*}{October} & Choose \& Design AI application to work on \\
+       & Develop a basic inference pipeline on a monolithic architecture \\ \hline
+      November & Convert pipeline to work on a distributed system using RPC \\ \hline
+      December & Manually deploy pipeline to distributed architecture on cloud \\ \hline
+      \multicolumn{2}{|c|}{2020} \\ \hline
+      \multirow{3}{*}{January} & Programmatically instantiate cloud resources and deploy model \\
+       & First Presentation \\
+       & Detailed interim report \\ \hline
+      February     & Vary deployments by cloud resources and measure latency/throughput on each  \\ \hline
+      March     & Enhance AI inference pipeline by adding more steps  \\ \hline
+      \multirow{3}{*}{April} & Finalize implementation \\
+       & Final Presentation \\
+       & Final Report \\ \hline
+      \end{tabular}
+  \end{center}
+\end{table}
+
+\chapter{Limitations and Potential Difficulties}
+Limitations and Potential Difficulties
+
+\chapter{Conclusion}
+Conclusion
+
+\backmatter
+
+\addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography
 
 \end{document}
