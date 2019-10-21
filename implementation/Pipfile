@@ -13,11 +13,12 @@ pandas = "*"
 scikit-learn = "*"
 matplotlib = "*"
 seaborn = "*"
-tensorflow = "==1.15.0"
 xgboost = "*"
-keras = "*"
 tqdm = "*"
 flask-cors = "*"
+tensorflow = "*"
+keras = "*"
+flask = "*"
 
 
 [dev-packages]
