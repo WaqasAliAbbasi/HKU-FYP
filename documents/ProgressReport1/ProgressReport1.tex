@@ -15,7 +15,7 @@
     \pagenumbering{arabic}
     \setcounter{page}{1}
     \setcounter{section}{0}
-    \renewcommand{\thesection}{\arabic{section}}
+    \renewcommand{\thesection}{\thechapter.\arabic{section}}
 }%
 
 \def\backmatter{%
@@ -28,22 +28,29 @@
 \date{\today}
  
 \begin{document}
-\frontmatter
+
 \maketitle
 
-\addcontentsline{toc}{chapter}{Abstract}
+\frontmatter
+
+\addcontentsline{toc}{chapter}{\abstractname}
 \begin{abstract}
+\thispagestyle{plain}
 abstract-text
 \end{abstract}
 
+\setcounter{page}{2}
 \tableofcontents
 
+\newpage
 \addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
 
+\newpage
 \addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
 
+\newpage
 \mainmatter
 
 \chapter{Introduction}
