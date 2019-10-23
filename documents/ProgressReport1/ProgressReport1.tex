@@ -25,7 +25,7 @@
     \renewcommand{\thesection}{\Alph{section}}
 }%
 
-\title{Progress Report 1 \\ Building new AI applications for a distributed AI serving system}
+\title{Progress Report 1 \\ Serving AI applications using a distributed architecture}
 \author{Waqas Ali\\{\small Supervisor: Dr. Heming Cui}\\{\small Mentor: Shixiong Zhao}}
 \date{\today}
  
@@ -38,7 +38,7 @@
 \addcontentsline{toc}{chapter}{\abstractname}
 \begin{abstract}
 \thispagestyle{plain}
-abstract-text
+Nowadays, artificial intelligence is everywhere from our homes to our hands making everything smarter. Learning from feedback, artificial intelligence programs imitate human intelligence. However, with their increasing usage comes ever-increasing user expectations and industry competition. As developers and data scientists make their programs smarter, they also make them complex. Consequently, it becomes a choice between features and performance, a highly undesirable position. This project explores moving artificial intelligence applications over to a distributed architecture instead of a centralized architecture as is the status quo. As proof of concept, a complex stock price prediction application is considered and the goal is to transfer it onto a distributed architecture. The project's objective is to develop tooling and foundation to automatically instantiate and compare distributed systems of a variety of specifications and scheduling algorithms. It's divided into three big milestones. First of all, the machine learning stage where a test model has to be developed ready to be improved upon. As of now, a stock price prediction service has been successfully developed. Second, modifying the model to work in a distributed manner which is next. Lastly, comparing distributed implementations of different kinds which is the most crucial aspect of this project.
 \end{abstract}
 
 \setcounter{page}{2}
@@ -85,14 +85,7 @@ Since end-users of machine learning applications are only concerned with inferen
 
 For inference, an input goes through multiple steps, known as a pipeline. As a pipeline increases in quantity and complexity, it can increase the \textit{latency} (time taken) to execute all these steps. Moreover, if a \textit{centralized architecture} (single machine) executes the complete pipeline, it can create bottlenecks. For example, if a pipeline for input A is in progress, the pipeline for input B cannot start.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{StockPriceServiceBasic.pdf}
-  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers. C6 is a caching layer. C7, C8, C9, C10 \& C11 are ML models that compete against each other. C4 is a sentiment analyzer whose results are taken into account for price prediction.}
-  \label{fig:StockPriceServiceBasic}
-\end{figure}
-
-For instance, a stock price prediction service (Figure \ref{fig:StockPriceServiceBasic}) involves several steps. On a centralized architecture, all tasks have to be done sequentially (even if they are independent of each other). This could take a long time and hence increase the latency. Moreover, until all tasks for a specific request have finished, processing for a new request cannot start. Thus, the service cannot handle a high number of requests in a given period i.e. \textit{throughput}.
+On a centralized architecture, all tasks have to be done sequentially (even if they are independent of each other). This could take a long time and hence increase the latency. Moreover until all tasks for a specific request have finished, processing for a new request cannot start. Thus, the service cannot handle a high number of requests in a given period i.e. \textit{throughput}.
 
 \section{Contribution}
 
@@ -156,7 +149,7 @@ To study whether a distributed architecture can indeed improve latency and throu
 \end{enumerate}
 
 \chapter{Schedule}\label{chap:schedule}
-To accomplish the objectives in section \ref{objectives}, the project aims to follow this schedule composed of milestones and a target completion month for each.
+To accomplish the objectives in section \ref{objectives}, the project follows the following schedule. It's composed of milestones with a target completion month for each.
 \begin{table}[h!]
   \begin{center}
     \caption{Project Schedule}
@@ -185,13 +178,41 @@ To accomplish the objectives in section \ref{objectives}, the project aims to fo
 \end{table}
 
 \chapter{Progress}\label{chap:progress}
-As of now, I have chosen an AI model to predict stock prices. I have made a basic model and developed a server that can serve predictions for any specified stock symbol. Moreover, I have developed a web app that will provide a UI to measure the latency for prediction from the client-side.
+\section{Summary}
+As of now, the first three milestones mentioned in \Cref{chap:methodology} are finished. I have chosen an AI model, developed a basic model, ran inference successfully on a single machine and built a latency measuring web app.
 
-\chapter{Limitations and Potential Difficulties}\label{chap:limitations}
-Limitations and Potential Difficulties
+\section{Stock Price Prediction}
+\subsection{Why?}
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{StockPriceServiceBasic.pdf}
+  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers. C6 is a caching layer. C7, C8, C9, C10 \& C11 are ML models that compete against each other. C4 is a sentiment analyzer whose results are taken into account for price prediction.}
+  \label{fig:StockPriceServiceBasic}
+\end{figure}
+
+After consultation with my mentor and careful research, I chose stock price prediction as my AI application. Input any stock symbol and it will predict its price on the next day. There are many ways to make such a prediction. One approach is to analyze past prices and predict the stock price behavior based on that. However, this approach completely ignores the market and current affairs. An interesting approach would be to use cutting edge time series forecasting models combined with sentiment analyzers to combine the best of both worlds. A rudimentary pipeline is visualized in Figure \ref{fig:StockPriceServiceBasic}.
+
+\subsection{Challenges}
+
+As the stock price prediction service should be able to predict prices for any number of the thousands of stock symbols out there and there is always something new happening on the news landscape, it is infeasible to train the model in advance for all stock symbols. Therefore, whenever the service is tasked with predicting price for a stock symbol it has to retrain itself and then carry out inference. All in all, this creates huge latency. As can be seen in Figure \ref{fig:StockPriceServiceBasic}, there are a lot of tasks that can be done independently. Hence, stock price prediction service is a prime testing ground for application of distributed computing in artificial intelligence.
+
+\section{Deployment on a single machine}
+
+As a baseline, I took the machine learning model I just developed and deployed it onto a single machine ready for inference.
+
+\section{Web app for measuring metrics}
+
+In addition I have setup a basic web app that accepts the server URL above and measures the latency for stock price prediction. I haven't added throughput measurement yet.
+
+\chapter{Limitations and Difficulties}\label{chap:limitations}
+\section{Personal Limitations}
+As I don't have enough experience working with time series data, a lot of my time has been spent on learning how to properly develop a machine learning model for it. Moreover, I have had to learn a lot of time series forecasting techniques mentioned in Figure \ref{fig:StockPriceServiceBasic} which has taken considerable time.
+
+\section{Potential Difficulties}
+I have never implemented a distributed architecture using python and I can already foresee me having to learn how to do that for my next step. Moreover, the current baseline model takes a long time to train and I am not sure whether I can bring down the time enough even if I use a distributed architecture. Lastly, I will need a cloud service account where I can instantiate required resources. Based on previous experience, it is not the most straightforward process. So I will have to figure out how I can do that.
 
 \chapter{Conclusion}\label{chap:conclusion}
-Conclusion
+As of now, I am on track as far as the schedule is concerned. I have a foundation to build upon and next steps are to convert the stock price prediction service into a distributed architecture. However, as I have only tackled the machine learning aspect of my project until now and I have yet to dive into the distributed system aspect, I am uncertain of how difficult it will be. 
 
 \backmatter
 
