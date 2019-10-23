@@ -2,6 +2,8 @@
 \usepackage[style=numeric]{biblatex}
 \usepackage{multirow}
 \usepackage{graphicx}
+\usepackage{cleveref}
+
 \addbibresource{references.bib}
 \graphicspath{ {../assets/} }
 
@@ -56,9 +58,9 @@ abstract-text
 \chapter{Introduction}
 
 \section{Background}
-Artificial intelligence is an area of computer science which focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Machine learning, specifically, is a subset of artificial intelligence which learns from data. \cite{Mitchell1997} Nowadays we see artificial intelligence everywhere from spam filters \cite{Androutsopoulos2000} to movie recommendations \cite{lekakos2008hybrid} to virtual assistants to self-driving.
+Artificial intelligence is an area of computer science that focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Machine learning, specifically, is a subset of artificial intelligence that learns from data. \cite{Mitchell1997} Nowadays we see ubiquitous applications of artificial intelligence such as spam filters \cite{Androutsopoulos2000},  recommendations \cite{lekakos2008hybrid}, virtual assistants and self-driving.
 
-Customers are demanding smarter and smarter capabilities in their machines which leads to its own set of software development challenges; Nvidia summarises them with the PLASTER \cite{Teich2018} framework:
+Customers are demanding smarter and smarter capabilities in their machines, and this trend leads to a new set of software development challenges for AI developers; \textit{Nvidia} summarises them with the PLASTER \cite{Teich2018} framework:
 \begin{itemize}
   \item Programmability
   \item Latency
@@ -69,51 +71,92 @@ Customers are demanding smarter and smarter capabilities in their machines which
   \item Rate of Learning
 \end{itemize}
 
-These challenges arise during the development lifecycle of any machine learning application. A machine learning application has two main stages:
+These aforementioned challenges carry over to the realm of machine learning, since it is a subset of artificial intelligence. A machine learning application has two main stages:
 \begin{enumerate}
   \item Training (Learning from data)
   \item Inference (Given an input, predicting an output)
 \end{enumerate}
 
-For example, for virtual assistants, training the voice recognition model involves exposing the program to hundreds of voice recordings and letting it figure out what sounds correspond to which words. Inference, however, is inputting a new voice recording and transcribing it using the trained voice recognition model.
+Take the example of an application that relies on a machine learning model to transcribe voice. Before the model can be used by the application, it needs to be trained. To do this, developers expose the model to hundreds of voice recordings to allow it to learn which sounds match to which words. Now, the application can use the model by sending it voice recordings and receiving transcribed text in return. In short, this process of predicting an output in response to an unseen input is inference, the second stage of machine learning as mentioned previously.
 
-End-users of machine learning applications are only concerned with inference and they expect real-time response.
+\section{Motivation}
+
+Since end-users of machine learning applications are only concerned with inference, not training, inference must be quick.
+
+For inference, an input goes through multiple steps, known as a pipeline. As a pipeline increases in quantity and complexity, it can increase the \textit{latency} (time taken) to execute all these steps. Moreover, if a \textit{centralized architecture} (single machine) executes the complete pipeline, it can create bottlenecks. For example, if a pipeline for input A is in progress, the pipeline for input B cannot start.
 
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{StockPriceServiceBasic.pdf}
-  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers. C6 is a caching layer. C7, C8, C9, C10 \& C11 are ML models which compete against each other. C4 is a sentiment analyzer whose results are taken into account for price prediction.}
+  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers. C6 is a caching layer. C7, C8, C9, C10 \& C11 are ML models that compete against each other. C4 is a sentiment analyzer whose results are taken into account for price prediction.}
   \label{fig:StockPriceServiceBasic}
 \end{figure}
 
-As AI application pipelines get complex, inference can take a long time. For instance, a stock price prediction service (Figure \ref{fig:StockPriceServiceBasic}) involves several steps. On a monolith architecture, all tasks have to be done sequentially (even if they are independent of each other). This could take a long time and hence increase the latency. Moreover, until all tasks for a specific request have finished, processing for a new request cannot be started. Thus, the service cannot handle high number of requests in a given time period i.e. throughput.
+For instance, a stock price prediction service (Figure \ref{fig:StockPriceServiceBasic}) involves several steps. On a centralized architecture, all tasks have to be done sequentially (even if they are independent of each other). This could take a long time and hence increase the latency. Moreover, until all tasks for a specific request have finished, processing for a new request cannot start. Thus, the service cannot handle a high number of requests in a given period i.e. \textit{throughput}.
 
-This is exactly the kind of situation where a distributed system could shine. By deploying several servers which could independently accomplish the pipeline tasks above, theoretically we can improve the latency and throughput of an AI application (concerns which were highlighted in the PLASTER framework \cite{Teich2018}).
+\section{Contribution}
 
-\section{Objective}
-The project's aim is to improve latency and throughput of AI applications by implementing and deploying them on a distributed system. As a proof of concept, an AI application will be chosen which has a complex inference pipeline and it will be developed on a distributed system.
+Several methods could be considered to optimize the latency and throughput of an artificial intelligence application.
 
-To prove that a distributed architecture can indeed improve latency and throughput, performance will be compared across systems of various specifications:
+This project attempts to tackle this optimization problem by efficiently distributing the pipeline tasks over several machines. The claim is that, theoretically, we can improve the latency and throughput of an AI application (concerns which were highlighted in the PLASTER framework \cite{Teich2018}) if decentralized architecture is employed instead of centralized architecture.
+
+\section{Objectives}\label{objectives}
+
+There are two steps to developing any distributed application:
 \begin{enumerate}
-  \item 1 node for n tasks (baseline)
-  \item less than n nodes for n tasks
-  \item n nodes for n tasks (optimum)
+  \item Program the application in a way as to take advantage of multiple machines.
+  \item Deploy the application on a network of machines.
 \end{enumerate}
 
-\chapter{Methodology}
+Therefore, moving an artificial intelligence application from a centralized architecture to a distributed network not only requires deploying it on a network of multiple machines but modifying it to utilize the newly available resources.
+
+Since every application is unique, devising a general technical solution for accomplishing the above two steps will be infeasible. Therefore, the project will choose one AI application as a proof of concept and use that as a testing ground of the proposed solution.
+
+A distributed application's success depends on how the application divides its tasks (job scheduling) and what kind of resources are available for use. To figure out what works best we need a quick and reliable way of testing different job scheduling algorithms on machines of different specifications.
+
+Consequently, the project's objectives are to develop the following programs:
 \begin{enumerate}
-  \item Choose AI Application i.e. Smart Driving, Stock Price Prediction, etc.
-  \item Develop and run basic inference pipeline on a monolith architecture.
-  \item Convert the pipeline to run using RPC (remote procedure call) on one server.
-  \item Deploy the above on multiple servers.
-  \item Devise a method to programmatically instantiate cloud resources and deploy model.
-  \item Compare latency and throughput of model on distributed systems of various specifications.
+  \item An AI application with a complex inference pipeline which can accept different job scheduling algorithms.
+  \item A deployment script that can programmatically buy cloud resources and deploy our AI application according to supplied specifications.
+  \item A web app to measure latency and throughput.
 \end{enumerate}
 
-\chapter{Current Status}
-Current status. Evaluation of progress.
+Given the above objectives are fulfilled, we can confidently argue for or against using distributed systems for AI applications.
 
-\chapter{Schedule}
+\section{Report Organization}
+The remainder of this report is organized as follows. \Cref{chap:methodology} describes and justifies the methodology. \Cref{chap:schedule} breaks the project into milestones and gives a schedule with estimated completion time for each. Following this, \cref{chap:progress} reports current progress and \cref{chap:limitations} discusses limitations and difficulties faced so far. Lastly, \cref{chap:conclusion} summarises lessons learned and future steps.
+
+\chapter{Methodology}\label{chap:methodology}
+
+\section{Choose AI Application for testing}
+As the project proposes a distributed architecture for artificial intelligence applications in general, our test AI application must be a sufficient representative of most if not all AI applications for a fair investigation. Naturally, a fairly representative application is one with a pipeline composed of different kinds of tasks with a mix of mutually dependent and independent ones. Ergo, choosing a single AI application as a testing ground for our solution is an important task that requires studying popular AI techniques and implementations in the community.
+
+\section{Develop basic model}
+Every AI or ML application starts with data science. First of all, a machine learning model needs to be trained and an inference pipeline needs to be developed. This requires studying current techniques for the application of our choice and using that knowledge to build and train a good enough model. At this stage, accuracy isn't important so we don't need to fine-tune the model. Once the model training is done, it needs to be ready for inference. Therefore, we need to ensure that all the steps required to accomplish inference on a new unseen input have been implemented at a satisfactory level.
+
+\section{Run on a centralized system}
+By now we have chosen a test AI application and trained a basic model for it. Moving on, we need to ensure we can successfully run inference on a single machine on the cloud. This step is important for two reasons. Firstly, this gives us a baseline performance we can compare our distributed implementations with. Second, we will have a working implementation of our application and we can refer to it while converting our application to a distributed implementation.
+
+\section{Convert to a distributed system}
+Consequently, the next step is to convert the application from a centralized implementation to a distributed implementation. This will require modifying the source code to use distributed system techniques such as RPC (remote procedure call). To ensure consistency, we should ensure our distributed implementation running on one machine has the same performance as the centralized implementation of earlier.
+
+\section{Programmatic Deployment}
+The only way to test a distributed implementation is to deploy it on a network of computers and measure performance. Cloud services make it considerably easy to do so without having to deal with actual hardware. After this stage, we should be able to automatically instantiate cloud resources according to provided specifications and deploy the distributed implementation of our application on them. We can also deploy our implementation on the cloud manually but that will take a lot of time and considering the number of times we would have to do it, it isn't feasible. Besides, we need to ensure all implementations are reproducible and consistent. 
+
+\section{Compare}
+With all these different implementations, we need a reliable way of comparing each implementation's performance that is completely decoupled from its intrinsic qualities. A fair and reliable way to compare is to create a web app that accepts a server URL and sends numerous requests to it. Consequently, it measures latency for each request and throughput in general. As the web app is run in the browser, it measures these metrics from the client-side and all it cares about is input and output. Thus, it does not matter for the web app if the server implementation is on a centralized or distributed architecture as long it receives an output.
+
+\subsection{Test Cases}
+To study whether a distributed architecture can indeed improve latency and throughput, performance will be compared across systems of various specifications:
+\begin{enumerate}
+  \item Centralized implementation (baseline)
+  \item 1 machine for n tasks (should be same as above)
+  \item Less than n machines for n tasks
+  \item n machines for n tasks (optimum)
+\end{enumerate}
+
+\chapter{Schedule}\label{chap:schedule}
+To accomplish the objectives in section \ref{objectives}, the project aims to follow this schedule composed of milestones and a target completion month for each.
 \begin{table}[h!]
   \begin{center}
     \caption{Project Schedule}
@@ -121,9 +164,12 @@ Current status. Evaluation of progress.
     \begin{tabular}{ |l|l| } 
       \hline
       \multicolumn{2}{|c|}{2019} \\ \hline
-      \multirow{2}{*}{October} & Choose \& Design AI application to work on \\
-       & Develop a basic inference pipeline on a monolithic architecture \\ \hline
-      November & Convert pipeline to work on a distributed system using RPC \\ \hline
+      \multirow{3}{*}{October} & Choose \& Design AI application to work on \\
+       & Develop a basic inference pipeline on a centralized architecture \\
+       & Progress Report 1 \\ \hline
+      \multirow{3}{*}{November} & Convert pipeline to work on a distributed system using RPC \\
+       & Web app to measure latency and throughput \\
+       & Progress Report 2 \\ \hline
       December & Manually deploy pipeline to distributed architecture on cloud \\ \hline
       \multicolumn{2}{|c|}{2020} \\ \hline
       \multirow{3}{*}{January} & Programmatically instantiate cloud resources and deploy model \\
@@ -138,10 +184,13 @@ Current status. Evaluation of progress.
   \end{center}
 \end{table}
 
-\chapter{Limitations and Potential Difficulties}
+\chapter{Progress}\label{chap:progress}
+As of now, I have chosen an AI model to predict stock prices. I have made a basic model and developed a server that can serve predictions for any specified stock symbol. Moreover, I have developed a web app that will provide a UI to measure the latency for prediction from the client-side.
+
+\chapter{Limitations and Potential Difficulties}\label{chap:limitations}
 Limitations and Potential Difficulties
 
-\chapter{Conclusion}
+\chapter{Conclusion}\label{chap:conclusion}
 Conclusion
 
 \backmatter
