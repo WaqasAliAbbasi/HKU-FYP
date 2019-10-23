@@ -8,23 +8,15 @@ name = "pypi"
 [packages]
 
 jupyter = "*"
-numpy = "*"
 pandas = "*"
-scikit-learn = "*"
 matplotlib = "*"
-seaborn = "*"
-xgboost = "*"
-tqdm = "*"
-flask-cors = "*"
-tensorflow = "*"
-keras = "*"
 flask = "*"
+flask-cors = "*"
+sklearn = "*"
+tqdm = "*"
+keras = "==2.2.5"
+numpy = "<1.17"
+tensorflow = "==1.15"
 
 
 [dev-packages]
-
-
-
-[requires]
-
-python_version = "3.6"

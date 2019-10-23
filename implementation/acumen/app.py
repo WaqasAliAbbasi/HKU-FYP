@@ -19,3 +19,6 @@ def show_stock_data(stock_symbol):
 def predict(stock_symbol):
     stock = Stock(stock_symbol)
     return jsonify(stock.predict())
+
+if __name__ == '__main__':
+    app.run()
