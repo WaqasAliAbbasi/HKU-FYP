@@ -38,8 +38,13 @@
 \addcontentsline{toc}{chapter}{\abstractname}
 \begin{abstract}
 \thispagestyle{plain}
-Nowadays, artificial intelligence is everywhere from our homes to our hands making everything smarter. Learning from feedback, artificial intelligence programs imitate human intelligence. However, with their increasing usage comes ever-increasing user expectations and industry competition. As developers and data scientists make their programs smarter, they also make them complex. Consequently, it becomes a choice between features and performance, a highly undesirable position. This project explores moving artificial intelligence applications over to a distributed architecture instead of a centralized architecture as is the status quo. As proof of concept, a complex stock price prediction application is considered and the goal is to transfer it onto a distributed architecture. The project's objective is to develop tooling and foundation to automatically instantiate and compare distributed systems of a variety of specifications and scheduling algorithms. It's divided into three big milestones. First of all, the machine learning stage where a test model has to be developed ready to be improved upon. As of now, a stock price prediction service has been successfully developed. Second, modifying the model to work in a distributed manner which is next. Lastly, comparing distributed implementations of different kinds which is the most crucial aspect of this project.
+
+In recent years, artificial intelligence (AI) has penetrated multiple dimensions of people's daily lives by making the devices they use smarter. Learning from feedback, AI programs imitate human intelligence in terms of its learn and predict. With such widespread usage, however, users demand improved functionalities and speed, pushing developers and data scientists to make their programs smarter in the midst of industry competition. These smarter programs have to deal with more complexities, and developers consequently have to choose whether to prioritize the program's features or performance, posing a dilemma for them. This project proposes to design an AI application with a distributed architecture instead of a centralized architecture (the more common structure in the status quo) in order to improve its latency and throughput. As proof of concept, the project will specifically examine a complex stock price prediction application and the goal is to transfer it onto a distributed architecture. The project's objective is to develop tooling and foundation to automatically instantiate and compare distributed systems of a variety of specifications and scheduling algorithms. It's divided into three big milestones. Firstly, the machine learning stage where a test model has to be developed and trained. Second, modifying the model to work in a distributed manner which is next. Lastly, comparing distributed implementations which is the most crucial aspect of this project. As of now, the first milestone has been completed in which a stock price prediction service has been successfully developed, trained and deployed on a single machine.
 \end{abstract}
+
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\section*{Acknowledgements}
+In addition to my supervisor and mentor who helped me with the technical aspects of my project, I would like to thank Ms. Mable Choi for her guidance in distilling and consolidating my work in a better way.
 
 \setcounter{page}{2}
 \tableofcontents
@@ -60,7 +65,7 @@ Nowadays, artificial intelligence is everywhere from our homes to our hands maki
 \section{Background}
 Artificial intelligence is an area of computer science that focuses on granting machines the ability to act intelligently \cite{McCarthy2007}. It's a vast field with limitless applications and each application has its own unique solution. Machine learning, specifically, is a subset of artificial intelligence that learns from data. \cite{Mitchell1997} Nowadays we see ubiquitous applications of artificial intelligence such as spam filters \cite{Androutsopoulos2000},  recommendations \cite{lekakos2008hybrid}, virtual assistants and self-driving.
 
-Customers are demanding smarter and smarter capabilities in their machines, and this trend leads to a new set of software development challenges for AI developers; \textit{Nvidia} summarises them with the PLASTER \cite{Teich2018} framework:
+Customers are demanding smarter and smarter capabilities in their machines, and this trend leads to a new set of software development challenges for AI developers. \textit{Nvidia} summarises them with the PLASTER \cite{Teich2018} framework:
 \begin{itemize}
   \item Programmability
   \item Latency
@@ -81,9 +86,16 @@ Take the example of an application that relies on a machine learning model to tr
 
 \section{Motivation}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{StockPriceServiceBasic.pdf}
+  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers which fetch past stock data and twitter mentions of a specified stock symbol. C6 is a caching layer which allows skipping C7-C11 steps if a prediction has been recently made for a specific stock symbol. C7, C8, C9, C10 \& C11 are ML models that compete against each other to predict a stock symbol's price. C4 is a sentiment analyzer whose results are taken into account for price prediction. As can be seen, it's a fairly complex pipeline composed of several different steps.}
+  \label{fig:StockPriceServiceBasic}
+\end{figure}
+
 Since end-users of machine learning applications are only concerned with inference, not training, inference must be quick.
 
-For inference, an input goes through multiple steps, known as a pipeline. As a pipeline increases in quantity and complexity, it can increase the \textit{latency} (time taken) to execute all these steps. Moreover, if a \textit{centralized architecture} (single machine) executes the complete pipeline, it can create bottlenecks. For example, if a pipeline for input A is in progress, the pipeline for input B cannot start.
+For inference, an input goes through multiple steps, known as a pipeline. Figure \ref{fig:StockPriceServiceBasic} is an example of a stock price prediction service's pipeline. As tasks in a pipeline increase in quantity and complexity, it can increase the \textit{latency} (time taken) to execute all steps of the pipeline. Moreover, if a \textit{centralized architecture} (single machine) executes the complete pipeline, it can create bottlenecks. For example, if a pipeline for input A is in progress, the pipeline for input B cannot start.
 
 On a centralized architecture, all tasks have to be done sequentially (even if they are independent of each other). This could take a long time and hence increase the latency. Moreover until all tasks for a specific request have finished, processing for a new request cannot start. Thus, the service cannot handle a high number of requests in a given period i.e. \textit{throughput}.
 
@@ -103,14 +115,14 @@ There are two steps to developing any distributed application:
 
 Therefore, moving an artificial intelligence application from a centralized architecture to a distributed network not only requires deploying it on a network of multiple machines but modifying it to utilize the newly available resources.
 
-Since every application is unique, devising a general technical solution for accomplishing the above two steps will be infeasible. Therefore, the project will choose one AI application as a proof of concept and use that as a testing ground of the proposed solution.
+Since every application is unique, devising a general technical solution for accomplishing the above two steps will be infeasible. Therefore, the project will choose one AI application as a proof of concept and use that as a testing ground of the solution proposed in previous section.
 
-A distributed application's success depends on how the application divides its tasks (job scheduling) and what kind of resources are available for use. To figure out what works best we need a quick and reliable way of testing different job scheduling algorithms on machines of different specifications.
+A distributed application's success depends on how the application divides its tasks (job scheduling) and quality/quantity of resources available for use. To figure out what works best we need a quick and reliable way of testing different job scheduling algorithms on networks of different sizes composed of machines of different specifications.
 
 Consequently, the project's objectives are to develop the following programs:
 \begin{enumerate}
   \item An AI application with a complex inference pipeline which can accept different job scheduling algorithms.
-  \item A deployment script that can programmatically buy cloud resources and deploy our AI application according to supplied specifications.
+  \item A deployment script that can programmatically buy cloud resources and deploy our AI application according to provided specifications.
   \item A web app to measure latency and throughput.
 \end{enumerate}
 
@@ -178,23 +190,30 @@ To accomplish the objectives in section \ref{objectives}, the project follows th
 \end{table}
 
 \chapter{Progress}\label{chap:progress}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{EpochVModelLoss.pdf}
+  \caption{This graph shows how our model learned from GE's historical stock price data. An Epoch means a round of training and Loss means how far off we are from actual values. A lower loss means a more accurate data. Train means the performance of our model on training data (data it uses to train itself). Test means the performance of our model on testing data (data it only uses for measuring performance and does not use to train itself at all). As can be seen, our model trains well quickly as the loss drops rapidly after 5 rounds.}
+  \label{fig:EpochVModelLoss}
+\end{figure}
+
 \section{Summary}
 As of now, the first three milestones mentioned in \Cref{chap:methodology} are finished. I have chosen an AI model, developed a basic model, ran inference successfully on a single machine and built a latency measuring web app.
 
 \section{Stock Price Prediction}
 \subsection{Why?}
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{StockPriceServiceBasic.pdf}
-  \caption{Inference pipeline of a basic stock price prediction service. C2 and C5 are data retrievers. C6 is a caching layer. C7, C8, C9, C10 \& C11 are ML models that compete against each other. C4 is a sentiment analyzer whose results are taken into account for price prediction.}
-  \label{fig:StockPriceServiceBasic}
-\end{figure}
 
-After consultation with my mentor and careful research, I chose stock price prediction as my AI application. Input any stock symbol and it will predict its price on the next day. There are many ways to make such a prediction. One approach is to analyze past prices and predict the stock price behavior based on that. However, this approach completely ignores the market and current affairs. An interesting approach would be to use cutting edge time series forecasting models combined with sentiment analyzers to combine the best of both worlds. A rudimentary pipeline is visualized in Figure \ref{fig:StockPriceServiceBasic}.
+After consultation with my mentor and careful research, I chose stock price prediction as my AI application. Input any stock symbol and it will predict its price on the next day. There are many ways to make such a prediction. One approach is to analyze past prices and predict the stock price behavior based on that. However, this approach completely ignores the market and current affairs. An interesting approach would be to use cutting edge time series forecasting models combined with sentiment analyzers to combine the best of both worlds.
 
 \subsection{Challenges}
 
-As the stock price prediction service should be able to predict prices for any number of the thousands of stock symbols out there and there is always something new happening on the news landscape, it is infeasible to train the model in advance for all stock symbols. Therefore, whenever the service is tasked with predicting price for a stock symbol it has to retrain itself and then carry out inference. All in all, this creates huge latency. As can be seen in Figure \ref{fig:StockPriceServiceBasic}, there are a lot of tasks that can be done independently. Hence, stock price prediction service is a prime testing ground for application of distributed computing in artificial intelligence.
+\begin{figure}
+  \includegraphics[width=\textwidth]{PredictionRealPrice.pdf}
+  \caption{This graph shows our model's predicted price for GE's stock for 120 days and the actual price for those 120 days. As can be seen, our model can do better but it captures the direction of the trend well. Predicted price and real price both show increase around the 20th day and both show a drop around the 90th day.}
+  \label{fig:PredictionRealPrice}
+\end{figure}
+
+As the stock price prediction service should be able to predict prices for any number of the thousands of stock symbols out there and there is always something new happening in the context of current affairs, it is infeasible to train the model in advance for all stock symbols. Therefore, whenever the service is tasked with predicting price for a stock symbol it has to retrain itself and then carry out inference. All in all, this process of training and then inference creates huge latency. As can be seen in Figure \ref{fig:StockPriceServiceBasic}, there are a lot of tasks that can be done independently. Hence, stock price prediction service is a prime testing ground for application of distributed computing in artificial intelligence.
 
 \section{Deployment on a single machine}
 
