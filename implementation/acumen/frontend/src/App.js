@@ -14,14 +14,15 @@ function App() {
     axios.get(`http://127.0.0.1:5000/stock/${stockSymbol}`).then(({ data }) => {
       setStockHistory(data);
     });
-
     setStockPrediction([]);
     setPredictionStatus(`Predicting for ${stockSymbol}...`);
+    const start = Date.now();
     axios
       .get(`http://127.0.0.1:5000/stock/${stockSymbol}/predict`)
       .then(({ data }) => {
         setStockPrediction(data);
-        setPredictionStatus("");
+        const timeTaken = Math.round((Date.now() - start)/10) / 100
+        setPredictionStatus(`Took ${timeTaken} s`);
       });
   };
   return (
