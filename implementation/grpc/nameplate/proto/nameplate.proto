@@ -1,0 +1,10 @@
+
+syntax = "proto3";
+
+message NameplateNumber {
+    float value = 1;
+}
+
+service Nameplate {
+    rpc GetNameplate(NameplateNumber) returns (NameplateNumber) {}
+}

@@ -17,6 +17,8 @@ tqdm = "*"
 keras = "==2.2.5"
 numpy = "<1.17"
 tensorflow = "==1.15"
+grpcio = "*"
+grpcio-tools = "*"
 
 
 [dev-packages]
