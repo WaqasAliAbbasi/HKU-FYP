@@ -1,0 +1,23 @@
+
+syntax = "proto3";
+
+message StockSymbol {
+    string stock_symbol = 1;
+}
+
+message StockHistory {
+    message StockPrice {
+        string date = 1;
+        string symbol = 2;
+        double open = 3;
+        double close = 4;
+        double low = 5;
+        double high = 6;
+        double volume = 7;
+    }
+    repeated StockPrice stock_history = 1;
+}
+
+service Stock {
+    rpc GetStockHistory(StockSymbol) returns (StockHistory) {}
+}
