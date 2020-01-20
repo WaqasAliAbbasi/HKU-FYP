@@ -19,6 +19,11 @@ class StockStub(object):
         request_serializer=services_dot_stock_dot_proto_dot_stock__pb2.StockSymbol.SerializeToString,
         response_deserializer=services_dot_stock_dot_proto_dot_stock__pb2.StockHistory.FromString,
         )
+    self.GetStockPredictions = channel.unary_unary(
+        '/Stock/GetStockPredictions',
+        request_serializer=services_dot_stock_dot_proto_dot_stock__pb2.StockSymbol.SerializeToString,
+        response_deserializer=services_dot_stock_dot_proto_dot_stock__pb2.StockPredictions.FromString,
+        )
 
 
 class StockServicer(object):
@@ -32,6 +37,13 @@ class StockServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GetStockPredictions(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_StockServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -39,6 +51,11 @@ def add_StockServicer_to_server(servicer, server):
           servicer.GetStockHistory,
           request_deserializer=services_dot_stock_dot_proto_dot_stock__pb2.StockSymbol.FromString,
           response_serializer=services_dot_stock_dot_proto_dot_stock__pb2.StockHistory.SerializeToString,
+      ),
+      'GetStockPredictions': grpc.unary_unary_rpc_method_handler(
+          servicer.GetStockPredictions,
+          request_deserializer=services_dot_stock_dot_proto_dot_stock__pb2.StockSymbol.FromString,
+          response_serializer=services_dot_stock_dot_proto_dot_stock__pb2.StockPredictions.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

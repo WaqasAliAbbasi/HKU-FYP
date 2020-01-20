@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n services/stock/proto/stock.proto\"#\n\x0bStockSymbol\x12\x14\n\x0cstock_symbol\x18\x01 \x01(\t\"\xb3\x01\n\x0cStockHistory\x12/\n\rstock_history\x18\x01 \x03(\x0b\x32\x18.StockHistory.StockPrice\x1ar\n\nStockPrice\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0e\n\x06symbol\x18\x02 \x01(\t\x12\x0c\n\x04open\x18\x03 \x01(\x01\x12\r\n\x05\x63lose\x18\x04 \x01(\x01\x12\x0b\n\x03low\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0e\n\x06volume\x18\x07 \x01(\x01\x32\x39\n\x05Stock\x12\x30\n\x0fGetStockHistory\x12\x0c.StockSymbol\x1a\r.StockHistory\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n services/stock/proto/stock.proto\"#\n\x0bStockSymbol\x12\x14\n\x0cstock_symbol\x18\x01 \x01(\t\"\xb3\x01\n\x0cStockHistory\x12/\n\rstock_history\x18\x01 \x03(\x0b\x32\x18.StockHistory.StockPrice\x1ar\n\nStockPrice\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0e\n\x06symbol\x18\x02 \x01(\t\x12\x0c\n\x04open\x18\x03 \x01(\x01\x12\r\n\x05\x63lose\x18\x04 \x01(\x01\x12\x0b\n\x03low\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0e\n\x06volume\x18\x07 \x01(\x01\"\'\n\x10StockPredictions\x12\x13\n\x0bpredictions\x18\x01 \x03(\x01\x32s\n\x05Stock\x12\x30\n\x0fGetStockHistory\x12\x0c.StockSymbol\x1a\r.StockHistory\"\x00\x12\x38\n\x13GetStockPredictions\x12\x0c.StockSymbol\x1a\x11.StockPredictions\"\x00\x62\x06proto3')
 )
 
 
@@ -159,10 +159,42 @@ _STOCKHISTORY = _descriptor.Descriptor(
   serialized_end=253,
 )
 
+
+_STOCKPREDICTIONS = _descriptor.Descriptor(
+  name='StockPredictions',
+  full_name='StockPredictions',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='predictions', full_name='StockPredictions.predictions', index=0,
+      number=1, type=1, cpp_type=5, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=255,
+  serialized_end=294,
+)
+
 _STOCKHISTORY_STOCKPRICE.containing_type = _STOCKHISTORY
 _STOCKHISTORY.fields_by_name['stock_history'].message_type = _STOCKHISTORY_STOCKPRICE
 DESCRIPTOR.message_types_by_name['StockSymbol'] = _STOCKSYMBOL
 DESCRIPTOR.message_types_by_name['StockHistory'] = _STOCKHISTORY
+DESCRIPTOR.message_types_by_name['StockPredictions'] = _STOCKPREDICTIONS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 StockSymbol = _reflection.GeneratedProtocolMessageType('StockSymbol', (_message.Message,), {
@@ -187,6 +219,13 @@ StockHistory = _reflection.GeneratedProtocolMessageType('StockHistory', (_messag
 _sym_db.RegisterMessage(StockHistory)
 _sym_db.RegisterMessage(StockHistory.StockPrice)
 
+StockPredictions = _reflection.GeneratedProtocolMessageType('StockPredictions', (_message.Message,), {
+  'DESCRIPTOR' : _STOCKPREDICTIONS,
+  '__module__' : 'services.stock.proto.stock_pb2'
+  # @@protoc_insertion_point(class_scope:StockPredictions)
+  })
+_sym_db.RegisterMessage(StockPredictions)
+
 
 
 _STOCK = _descriptor.ServiceDescriptor(
@@ -195,8 +234,8 @@ _STOCK = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=255,
-  serialized_end=312,
+  serialized_start=296,
+  serialized_end=411,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetStockHistory',
@@ -205,6 +244,15 @@ _STOCK = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_STOCKSYMBOL,
     output_type=_STOCKHISTORY,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetStockPredictions',
+    full_name='Stock.GetStockPredictions',
+    index=1,
+    containing_service=None,
+    input_type=_STOCKSYMBOL,
+    output_type=_STOCKPREDICTIONS,
     serialized_options=None,
   ),
 ])

@@ -18,6 +18,11 @@ message StockHistory {
     repeated StockPrice stock_history = 1;
 }
 
+message StockPredictions {
+    repeated double predictions = 1;
+}
+
 service Stock {
     rpc GetStockHistory(StockSymbol) returns (StockHistory) {}
+    rpc GetStockPredictions(StockSymbol) returns (StockPredictions) {}
 }

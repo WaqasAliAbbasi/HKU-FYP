@@ -26,10 +26,12 @@ def show_stock_data(stock_symbol):
     return jsonify(json.loads(response_serialized)["stockHistory"])
 
 
-# @app.route('/stock/<stock_symbol>/predict')
-# def predict(stock_symbol):
-#     stock = Stock(stock_symbol)
-#     return jsonify(stock.predict())
+@app.route('/stock/<stock_symbol>/predict')
+def predict(stock_symbol):
+    stock_symbol_input = stock_pb2.StockSymbol(stock_symbol=stock_symbol)
+    response = stock_service_stub.GetStockPredictions(stock_symbol_input)
+    response_serialized = MessageToJson(response)
+    return jsonify(json.loads(response_serialized)["predictions"])
 
 
 if __name__ == '__main__':

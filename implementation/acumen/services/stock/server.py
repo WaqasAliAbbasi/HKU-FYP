@@ -13,6 +13,12 @@ class StockServicer(stock_pb2_grpc.StockServicer):
         response.stock_history.extend(stock_history)
         return response
 
+    def GetStockPredictions(self, request, context):
+        response = stock_pb2.StockPredictions()
+        response.predictions.extend(
+            helper.get_stock_predictions(request.stock_symbol))
+        return response
+
 
 server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
