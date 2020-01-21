@@ -1,5 +1,5 @@
-from services.stock.proto import stock_pb2, stock_pb2_grpc
-from services.stock import helper
+from proto import stock_pb2, stock_pb2_grpc
+import helper
 import time
 from concurrent import futures
 import grpc

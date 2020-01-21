@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, LSTM
 from keras import optimizers
+import os
 
 iter_changes = "dropout_layers_0.4_0.4"
 params = {
@@ -47,8 +48,8 @@ def trim_dataset(mat, batch_size):
 class Stock:
     def __init__(self, symbol):
         self.symbol = symbol
-        df = pd.read_csv(
-            "../data/KaggleNYStockExchange/prices-split-adjusted.csv")
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__), "data",
+                                      "prices-split-adjusted.csv"))
         self.history = df[df.symbol == self.symbol].sort_values("date")
 
     def get_history_dict(self):

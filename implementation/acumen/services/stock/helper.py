@@ -1,4 +1,4 @@
-from services.stock.stock import Stock
+from stock import Stock
 
 
 def get_stock_history(stock_symbol):

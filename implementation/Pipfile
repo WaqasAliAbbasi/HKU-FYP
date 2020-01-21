@@ -16,7 +16,7 @@ sklearn = "*"
 tqdm = "*"
 keras = "==2.2.5"
 numpy = "<1.17"
-tensorflow = "==1.15"
+tensorflow = "==1.15.0"
 grpcio = "*"
 grpcio-tools = "*"
 
