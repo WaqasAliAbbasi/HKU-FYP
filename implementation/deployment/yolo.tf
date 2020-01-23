@@ -7,12 +7,23 @@ resource "docker_image" "yolo" {
   pull_triggers = [data.docker_registry_image.yolo.sha256_digest]
 }
 
-resource "docker_container" "yolo" {
-  image = docker_image.yolo.latest
-  name  = "yolo-service"
+resource "null_resource" "yolo" {
+  triggers = {
+    image = docker_image.yolo.latest
+  }
 
-  ports {
-    internal = 50051
-    external = 50052
+  connection {
+    user        = "waqas"
+    type        = "ssh"
+    private_key = file("~/.ssh/id_rsa")
+    timeout     = "2m"
+    host        = "202.45.128.184"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "docker rm -f yolo-service 2> /dev/null",
+      "docker run --name yolo-service -p 50052:50051 --gpus all -d waqasali/fyp-yolo"
+    ]
   }
 }

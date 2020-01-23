@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM nvidia/cuda:10.2-devel-ubuntu18.04
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -16,11 +16,13 @@ RUN git clone --depth 1 https://github.com/pjreddie/darknet.git
 
 RUN mkdir /output
 
-WORKDIR /darknet
+WORKDIR /darknet 
 
-RUN curl -sSLO https://pjreddie.com/media/files/yolov3.weights
+RUN sed -i 's/GPU=0/GPU=1/g' ./Makefile
 
 RUN make
+
+RUN curl -sSLO https://pjreddie.com/media/files/yolov3.weights
 
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
