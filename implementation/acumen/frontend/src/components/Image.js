@@ -6,7 +6,7 @@ export const Image = () => {
   const [predictionStatus, setPredictionStatus] = useState(
     "(upload using the file selection below)"
   );
-  const [detections, setDetections] = useState([]);
+  const [detections, setDetections] = useState({});
   const onChange = e => {
     const files = Array.from(e.target.files);
     setUploading(true);

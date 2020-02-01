@@ -2,7 +2,7 @@ import os
 import grpc
 import json
 
-from services.yolo.proto import chunk_pb2_grpc, chunk_pb2
+from services.alpr.proto import alpr_pb2_grpc, alpr_pb2
 
 from google.protobuf.json_format import MessageToJson
 
@@ -15,7 +15,7 @@ def get_file_chunks(filename):
             piece = f.read(CHUNK_SIZE)
             if len(piece) == 0:
                 return
-            yield chunk_pb2.Chunk(buffer=piece)
+            yield alpr_pb2.ALPRChunk(buffer=piece)
 
 
 def save_chunks_to_file(chunks, filename):
@@ -27,29 +27,24 @@ def save_chunks_to_file(chunks, filename):
 class FileClient:
     def __init__(self, address):
         channel = grpc.insecure_channel(address)
-        self.stub = chunk_pb2_grpc.FileServerStub(channel)
+        self.stub = alpr_pb2_grpc.ALPRFileServerStub(channel)
 
     def upload(self, in_file_name):
         chunks_generator = get_file_chunks(in_file_name)
         response = self.stub.upload(chunks_generator)
         parsedResponse = json.loads(MessageToJson(response))
-        if "detections" in parsedResponse:
-            return parsedResponse["detections"]
+        if "plates" in parsedResponse:
+            return parsedResponse["plates"]
         else:
             return []
 
     def download(self, target_name, out_file_name):
-        response = self.stub.download(chunk_pb2.Request(name=target_name))
+        response = self.stub.download(alpr_pb2.ALPRRequest(name=target_name))
         save_chunks_to_file(response, out_file_name)
 
 
-def getYOLOResult(filepath, predictionpath):
-    if os.path.exists(predictionpath):
-        os.remove(predictionpath)
+def getALPRResult(filepath, predictionpath):
+    client = FileClient('localhost:50053')
+    plates = client.upload(filepath)
 
-    client = FileClient('localhost:50052')
-    detections = client.upload(filepath)
-
-    client.download('whatever_name', predictionpath)
-
-    return detections
+    return plates

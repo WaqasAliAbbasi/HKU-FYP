@@ -8,6 +8,7 @@ from google.protobuf.json_format import MessageToJson
 
 import os
 import yolo_client
+import alpr_client
 
 UPLOAD_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -60,7 +61,10 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], "predict.jpg")
             file.save(filepath)
             detections = yolo_client.getYOLOResult(filepath, predictionpath)
-            return jsonify(detections)
+            plates = []
+            if "car" in detections:
+                plates = alpr_client.getALPRResult(filepath, predictionpath)
+            return jsonify({"detections": detections, "plates": plates})
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], "prediction.jpg"), attachment_filename="prediction.jpg")
 
 
