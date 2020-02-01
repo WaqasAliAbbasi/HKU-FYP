@@ -13,6 +13,6 @@ resource "docker_container" "resnet" {
 
   ports {
     internal = 5000
-    external = 5000
+    external = 50053
   }
 }

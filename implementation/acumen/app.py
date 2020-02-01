@@ -59,10 +59,10 @@ def upload_file():
         if file and allowed_file(file.filename):
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], "predict.jpg")
             file.save(filepath)
-            yolo_client.getYOLOResult(filepath, predictionpath)
-            return "OK"
+            detections = yolo_client.getYOLOResult(filepath, predictionpath)
+            return jsonify(detections)
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], "prediction.jpg"), attachment_filename="prediction.jpg")
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

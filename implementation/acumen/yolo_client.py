@@ -1,7 +1,10 @@
 import os
 import grpc
+import json
 
 from services.yolo.proto import chunk_pb2_grpc, chunk_pb2
+
+from google.protobuf.json_format import MessageToJson
 
 CHUNK_SIZE = 1024 * 1024  # 1MB
 
@@ -28,7 +31,8 @@ class FileClient:
 
     def upload(self, in_file_name):
         chunks_generator = get_file_chunks(in_file_name)
-        self.stub.upload(chunks_generator)
+        response = self.stub.upload(chunks_generator)
+        return json.loads(MessageToJson(response))["detections"]
         # assert response.length == os.path.getsize(in_file_name)
 
     def download(self, target_name, out_file_name):
@@ -37,9 +41,12 @@ class FileClient:
 
 
 def getYOLOResult(filepath, predictionpath):
-    client = FileClient('localhost:50052')
-    client.upload(filepath)
-
     if os.path.exists(predictionpath):
         os.remove(predictionpath)
+
+    client = FileClient('localhost:50052')
+    detections = client.upload(filepath)
+
     client.download('whatever_name', predictionpath)
+
+    return detections

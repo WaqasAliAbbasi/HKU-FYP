@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x11proto/chunk.proto\"\x17\n\x05\x43hunk\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\"\x17\n\x07Request\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x17\n\x05Reply\x12\x0e\n\x06length\x18\x01 \x01(\x05\x32L\n\nFileServer\x12\x1c\n\x06upload\x12\x06.Chunk\x1a\x06.Reply\"\x00(\x01\x12 \n\x08\x64ownload\x12\x08.Request\x1a\x06.Chunk\"\x00\x30\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x11proto/chunk.proto\"\x17\n\x05\x43hunk\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\"\x17\n\x07Request\x12\x0c\n\x04name\x18\x01 \x01(\t\"+\n\x05Reply\x12\x0e\n\x06length\x18\x01 \x01(\x05\x12\x12\n\ndetections\x18\x02 \x03(\t2L\n\nFileServer\x12\x1c\n\x06upload\x12\x06.Chunk\x1a\x06.Reply\"\x00(\x01\x12 \n\x08\x64ownload\x12\x08.Request\x1a\x06.Chunk\"\x00\x30\x01\x62\x06proto3')
 )
 
 
@@ -102,6 +102,13 @@ _REPLY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='detections', full_name='Reply.detections', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -115,7 +122,7 @@ _REPLY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=71,
-  serialized_end=94,
+  serialized_end=114,
 )
 
 DESCRIPTOR.message_types_by_name['Chunk'] = _CHUNK
@@ -152,8 +159,8 @@ _FILESERVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=96,
-  serialized_end=172,
+  serialized_start=116,
+  serialized_end=192,
   methods=[
   _descriptor.MethodDescriptor(
     name='upload',

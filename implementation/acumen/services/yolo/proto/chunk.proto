@@ -15,4 +15,5 @@ message Request {
 
 message Reply {
   int32 length = 1;
+  repeated string detections = 2;
 }

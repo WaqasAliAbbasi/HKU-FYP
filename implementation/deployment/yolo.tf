@@ -2,14 +2,9 @@ data "docker_registry_image" "yolo" {
   name = "waqasali/fyp-yolo"
 }
 
-resource "docker_image" "yolo" {
-  name          = data.docker_registry_image.yolo.name
-  pull_triggers = [data.docker_registry_image.yolo.sha256_digest]
-}
-
 resource "null_resource" "yolo" {
   triggers = {
-    image = docker_image.yolo.latest
+    digest = data.docker_registry_image.yolo.sha256_digest
   }
 
   connection {
@@ -23,7 +18,12 @@ resource "null_resource" "yolo" {
   provisioner "remote-exec" {
     inline = [
       "docker rm -f yolo-service 2> /dev/null",
+      "docker pull waqasali/fyp-yolo",
       "docker run --name yolo-service -p 50052:50051 --gpus all -d waqasali/fyp-yolo"
     ]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }

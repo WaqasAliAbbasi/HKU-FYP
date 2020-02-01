@@ -5,6 +5,7 @@ import grpc
 import time
 import subprocess
 import os
+import detect
 
 from proto import chunk_pb2, chunk_pb2_grpc
 
@@ -31,18 +32,18 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
 
         class Servicer(chunk_pb2_grpc.FileServerServicer):
             def __init__(self):
-                self.tmp_file_name = '/tmp/server_tmp'
+                self.tmp_file_name = '/tmp/server_tmp.jpg'
+                self.output_file_name = "./output/server_tmp.png"
 
             def upload(self, request_iterator, context):
                 save_chunks_to_file(request_iterator, self.tmp_file_name)
-                os.system(
-                    f'./darknet detect cfg/yolov3.cfg yolov3.weights {self.tmp_file_name} -out /tmp/prediction')
-                os.system(f'mv /tmp/prediction* {self.tmp_file_name}')
-                return chunk_pb2.Reply(length=os.path.getsize(self.tmp_file_name))
+                results = detect.detect("/tmp")
+                detections = results[0]
+                return chunk_pb2.Reply(length=os.path.getsize(self.output_file_name), detections=detections)
 
             def download(self, request, context):
                 if request.name:
-                    return get_file_chunks(self.tmp_file_name)
+                    return get_file_chunks(self.output_file_name)
 
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
         chunk_pb2_grpc.add_FileServerServicer_to_server(
