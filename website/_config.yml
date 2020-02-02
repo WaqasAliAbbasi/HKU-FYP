@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Distributed AI Inference and Deployment
+title: Serving AI using a Distributed Architecture
 email: waqasali@connect.hku.hk
 description: "Final Year Project by Waqas Ali (CompSci HKU Class of 2020) - Supervisor: Dr. Heming Cui - Mentor: Shixiong Zhao"
 baseurl: "/fyp/2019/fyp19060" # the subpath of your site, e.g. /blog
