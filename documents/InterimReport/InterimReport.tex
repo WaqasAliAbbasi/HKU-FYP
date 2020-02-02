@@ -50,13 +50,13 @@ This project proposes to design an AI application with a distributed architectur
 As proof of concept, the project will specifically examine a complex stock price prediction application and the goal is to transfer it onto a distributed architecture.
 The project's objective is to develop tooling and foundation to automatically instantiate and compare distributed systems of a variety of specifications and scheduling algorithms.
 There are three milestones in this project.
-Firstly, the machine learning stage where a test model has to be developed and trained.
-Second, modifying the model to work in a distributed manner.
+Firstly, the machine learning stage where test models have to be developed and trained.
+Second, modifying the model serving to work in a distributed manner.
 Lastly, comparing distributed implementations which is the most crucial aspect of this project.
-As of now, only the first milestone has been reached in which a stock price prediction service has been successfully developed, trained and deployed on a single machine.
-As a result, there is a functioning baseline to which further improvements to the service can be compared to.
+As of now, the first and second milestones have been reached in which a stock price prediction service has been successfully developed, trained and deployed for a single machine and a cluster.
+As a result, there is a functioning baseline to which further iterations to the service can be made to better evaluate the viability of a distributed architecture.
 Moreover, a metric tool i.e. web app has been developed which measures latency of the service in an architecture-agnostic way.
-The project is on track for a distributed implementation of the stock price prediction service to be developed and compared with non-distributed implementation to assess if latency and throughput could be improved.
+The project is on track for an enhanced distributed implementation of the stock price prediction service to be developed and compared with non-distributed implementation to assess if latency and throughput could be improved.
 \end{abstract}
 
 \addcontentsline{toc}{chapter}{Acknowledgements}
@@ -166,16 +166,16 @@ The following sections describe and justify the steps through which the project 
 \section{Choose AI Application for testing}
 As the project proposes a distributed architecture for artificial intelligence applications in general, our test AI application must be a sufficient representative of most if not all AI applications for a fair investigation. Naturally, a fairly representative application is one with a pipeline composed of different kinds of tasks with a mix of mutually dependent and independent ones. Ergo, choosing a single AI application as a testing ground for our solution is an important task that requires studying popular AI techniques and implementations in the community.
 
-\section{Develop basic model}
+\section{Develop basic application}
 Every AI or ML application starts with data science.
-First of all, a machine learning model needs to be trained and an inference pipeline needs to be developed.
-This requires studying current techniques for the application of our choice and using that knowledge to build and train a good enough model.
-At this stage, accuracy is not important so we do not need to fine-tune the model.
+First of all, machine learning models need to be trained and an inference pipeline needs to be developed.
+This requires studying current techniques for the application of our choice and using that knowledge to build and train good enough models.
+At this stage, accuracy is not important so we do not need to fine-tune the models.
 Once the model training is done, it needs to be ready for inference.
 Therefore, we need to ensure that all the steps required to accomplish inference on a new unseen input have been implemented at a satisfactory level.
 
 \section{Run on a centralized system}
-By now we have chosen a test AI application and trained a basic model for it. Moving on, we need to ensure we can successfully run inference on a single machine on the cloud. This step is important for two reasons. Firstly, this gives us a baseline performance we can compare our distributed implementations with. Second, we will have a working implementation of our application and we can refer to it while converting our application to a distributed implementation.
+By now we have chosen a test AI application and trained basic models for it. Moving on, we need to ensure we can successfully run inference on a single machine. This step is important for two reasons. Firstly, this gives us a baseline performance we can compare our distributed implementations with. Second, we will have a working implementation of our application and we can refer to it while converting our application to a distributed implementation.
 
 \section{Convert to a distributed system}
 Consequently, the next step is to convert the application from a centralized implementation to a distributed implementation.
@@ -243,8 +243,8 @@ It is composed of milestones with a target completion month for each.
 \end{figure}
 
 \section{Summary}
-As of now, the first three milestones mentioned in \Cref{chap:methodology} have been reached.
-I have chosen an AI model, developed a basic model, ran inference successfully on a single machine and built a latency measuring web app.
+As of now, the first four milestones mentioned in \Cref{chap:methodology} have been reached.
+I have chosen an AI model, developed a basic model, ran inference successfully on a single machine, built a latency measuring web app and converted the service to run on a distributed architecture using RPC (Remote Procedure Call).
 
 \section{Stock Price Prediction}
 \subsection{Why?}
@@ -273,19 +273,24 @@ As a baseline, the developed machine learning model was deployed onto a single m
 
 Moreover, a basic web app was developed which accepts a URL for the service and measures the latency for stock price prediction. It must be noted that, in addition to latency, throughput is an equally important metric for the project but it has yet to be added to the web app.
 
+\section{Deployment on a cluster}
+
+Building upon the previous work, a gRPC (Open Source Remote Procedure Calls Implemenation) server was developed which served the machine learning model. After that, a Docker Image was made so the service can be easily run as a microservice on any machine. Then, Terraform (Infrastructure as Code) was used to deploy the docker image onto a HKU department server (with GPU). Ultimately, a gRPC client on a separate machine was used to call the microservice. The client was also a Flask server which responded to requests of the above-mentioned metric-measuring web app (built in React). All in all, a rudimentary distributed implementation was successfuly made ready to be enhanced further.
+
 \chapter{Limitations and Difficulties}\label{chap:limitations}
-\section{Personal Limitations}
-As I do not have enough experience working with time series data, much of my time has been spent on learning how to properly develop a machine learning model for it. Moreover, I have had to learn several time series forecasting techniques mentioned in Figure \ref{fig:StockPriceServiceBasic} which has taken considerable time.
+\section{Personal Limitations/Difficulties}
+As I do not have enough experience working with time series data, much of my time has been spent on learning how to properly develop a machine learning model for it. Moreover, I have had to learn several time series forecasting techniques mentioned in Figure \ref{fig:StockPriceServiceBasic} which has taken considerable time. In addition, learning gRPC and using it in conjunction with Docker and SSH tunneling was challenging. 
 
 \section{Potential Difficulties}
-I have never implemented a distributed architecture using python and I can already foresee me having to learn how to do that for my next step. Moreover, the current baseline model takes a long time to train and I am not sure whether I can bring down the time enough even if I use a distributed architecture. Lastly, I will need a cloud service account where I can instantiate required resources. Based on previous experience, it is not the most straightforward process. So I will have to figure out how I can do that.
+The current baseline model takes a long time to train and I am not sure whether I can bring down the time enough even if I use a distributed architecture.
 
 \chapter{Conclusion}\label{chap:conclusion}
 The project has three crucial parts to it: machine learning, metric tooling and distributed architecture.
 As shown in \cref{chap:progress}, a functional stock price prediction service has been developed and deployed which closely resembles most machine learning applications in the real world.
 Moreover, reliable metric tooling has been successfully setup and is ready to measure further iterations of the stock price prediction service.
-With two out of three parts covered, the project is on track for a distributed architecture to be implemented for the stock price prediction service.
-As mentioned in \cref{chap:methodology}, the hypothesis mentioned in section \ref{contribution} (distributed architecture is better than traditional architecture) will be tested using production-representative machine learning application and reliable metric tooling once the distributed architecture is implemented.
+Adding to that, a basic distributed implementation has been developed and further work is being currently done to improve it.
+With more than two of three parts covered, the project is on track for a distributed architecture to be further developed for the stock price prediction service.
+As mentioned in \cref{chap:methodology}, the hypothesis mentioned in section \ref{contribution} (distributed architecture is better than traditional architecture) will be tested using production-representative machine learning application and reliable metric tooling once the distributed architecture is fully implemented.
 With the data obtained from these tests, the project will assess whether latency and throughput of AI applications can be improved using a distributed architecture.
 
 \backmatter
