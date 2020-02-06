@@ -3,7 +3,6 @@ import grpc
 import json
 
 from services.yolo.proto import chunk_pb2_grpc, chunk_pb2
-
 from google.protobuf.json_format import MessageToJson
 
 CHUNK_SIZE = 1024 * 1024  # 1MB
@@ -43,13 +42,17 @@ class FileClient:
         save_chunks_to_file(response, out_file_name)
 
 
-def getYOLOResult(filepath, predictionpath):
-    if os.path.exists(predictionpath):
-        os.remove(predictionpath)
+def getYOLOResult(filepath, predictionpath, service, q):
+    # if os.path.exists(predictionpath):
+    #     os.remove(predictionpath)
 
-    client = FileClient('localhost:50052')
+    port = service['port']
+    client = FileClient('localhost:'+str(port))
     detections = client.upload(filepath)
 
     client.download('whatever_name', predictionpath)
+
+    q.put(service)
+    print("finished with " + str(port))
 
     return detections

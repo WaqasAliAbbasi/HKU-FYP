@@ -13,6 +13,6 @@ resource "docker_container" "alpr" {
 
   ports {
     internal = 50051
-    external = 50053
+    external = var.alpr1_port
   }
 }

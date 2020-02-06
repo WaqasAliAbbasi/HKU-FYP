@@ -2,7 +2,7 @@ data "docker_registry_image" "yolo" {
   name = "waqasali/fyp-yolo"
 }
 
-resource "null_resource" "yolo" {
+resource "null_resource" "yolo-machine1" {
   triggers = {
     digest = data.docker_registry_image.yolo.sha256_digest
   }
@@ -17,9 +17,41 @@ resource "null_resource" "yolo" {
 
   provisioner "remote-exec" {
     inline = [
-      "docker rm -f yolo-service 2> /dev/null",
+      "docker rm -f yolo-service-1 2> /dev/null",
+      "docker rm -f yolo-service-2 2> /dev/null",
+      "docker rm -f yolo-service-3 2> /dev/null",
       "docker pull waqasali/fyp-yolo",
-      "docker run --name yolo-service -p 50052:50051 --gpus all -d waqasali/fyp-yolo"
+      "docker run --name yolo-service-1 -p ${var.yolo1_port}:50051 --gpus device=0 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-2 -p ${var.yolo2_port}:50051 --gpus device=1 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-3 -p ${var.yolo3_port}:50051 --gpus all -d waqasali/fyp-yolo",
+    ]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "null_resource" "yolo-machine2" {
+  triggers = {
+    digest = data.docker_registry_image.yolo.sha256_digest
+  }
+
+  connection {
+    user        = "waqas"
+    type        = "ssh"
+    private_key = file("~/.ssh/id_rsa")
+    timeout     = "2m"
+    host        = "202.45.128.185"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "docker rm -f yolo-service-4 2> /dev/null",
+      "docker rm -f yolo-service-5 2> /dev/null",
+      "docker pull waqasali/fyp-yolo",
+      "docker run --name yolo-service-4 -p ${var.yolo4_port}:50051 --gpus device=0 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-5 -p ${var.yolo5_port}:50051 --gpus all -d waqasali/fyp-yolo",
     ]
   }
 

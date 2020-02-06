@@ -44,7 +44,7 @@ class FileClient:
 
 
 def getALPRResult(filepath, predictionpath):
-    client = FileClient('localhost:50053')
+    client = FileClient('localhost:50052')
     plates = client.upload(filepath)
 
     return plates

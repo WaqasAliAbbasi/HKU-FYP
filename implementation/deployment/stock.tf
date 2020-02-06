@@ -13,6 +13,6 @@ resource "docker_container" "stock" {
 
   ports {
     internal = 50051
-    external = 50051
+    external = var.stock_port
   }
 }
