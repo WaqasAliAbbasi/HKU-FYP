@@ -8,13 +8,13 @@ from google.protobuf.json_format import MessageToJson
 CHUNK_SIZE = 1024 * 1024  # 1MB
 
 
-def get_file_chunks(filename):
-    with open(filename, 'rb') as f:
-        while True:
-            piece = f.read(CHUNK_SIZE)
-            if len(piece) == 0:
-                return
-            yield chunk_pb2.Chunk(buffer=piece)
+def get_file_chunks(file):
+    file.stream.seek(0)
+    while True:
+        piece = file.read(CHUNK_SIZE)
+        if len(piece) == 0:
+            return
+        yield chunk_pb2.Chunk(buffer=piece)
 
 
 def save_chunks_to_file(chunks, filename):
@@ -28,8 +28,8 @@ class FileClient:
         channel = grpc.insecure_channel(address)
         self.stub = chunk_pb2_grpc.FileServerStub(channel)
 
-    def upload(self, in_file_name):
-        chunks_generator = get_file_chunks(in_file_name)
+    def upload(self, file):
+        chunks_generator = get_file_chunks(file)
         response = self.stub.upload(chunks_generator)
         parsedResponse = json.loads(MessageToJson(response))
         if "detections" in parsedResponse:
@@ -42,15 +42,15 @@ class FileClient:
         save_chunks_to_file(response, out_file_name)
 
 
-def getYOLOResult(filepath, predictionpath, service, q):
-    # if os.path.exists(predictionpath):
-    #     os.remove(predictionpath)
-
+def getYOLOResult(file, predictionpath, service, q):
     port = service['port']
     client = FileClient('localhost:'+str(port))
-    detections = client.upload(filepath)
+    detections = client.upload(file)
 
-    client.download('whatever_name', predictionpath)
+    try:
+        client.download('whatever_name', predictionpath)
+    except OSError:
+        pass
 
     q.put(service)
     print("finished with " + str(port))

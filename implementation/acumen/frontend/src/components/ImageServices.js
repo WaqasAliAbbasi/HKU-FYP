@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import { API_URL } from "..";
+import { Card, Form, Button, ButtonToolbar } from "react-bootstrap";
 
 export const ImageServices = () => {
   const [services, setServices] = useState([]);
-  const [updated, setUpdated] = useState("All the above are being used");
   useEffect(() => {
     axios
       .get(`${API_URL}/yolo_services`)
@@ -29,7 +29,6 @@ export const ImageServices = () => {
             .map(service => ({ ...service, checked: true }))
             .sort((a, b) => a.port - b.port)
         );
-        setUpdated("Updated services to use all above");
       });
   };
 
@@ -40,24 +39,33 @@ export const ImageServices = () => {
         services.filter(({ checked }) => checked)
       )
       .then(response => response.data)
-      .then(services =>
-        setUpdated(
-          `Updated services to use ${services
-            .map(({ port }) => port)
-            .join(" ")}`
-        )
-      );
+      .then(updatedServices => {
+        const absent = services
+          .filter(
+            ({ port }) =>
+              !updatedServices.map(({ port }) => port).includes(port)
+          )
+          .map(service => ({ ...service, checked: false }));
+        setServices(
+          [
+            ...absent,
+            ...updatedServices.map(service => ({ ...service, checked: true }))
+          ].sort((a, b) => a.port - b.port)
+        );
+      });
   };
   return (
-    <div>
-      <h2>Set YOLO Services in Use</h2>
-      {services.map(({ name, port, checked }, index) => (
-        <p key={index}>
-          <label>
-            {name} (Port {port})
-            <input
-              type="checkbox"
-              defaultChecked={checked}
+    <Card>
+      <Card.Header as="h5">Set YOLO Services in Use</Card.Header>
+      <Card.Body>
+        <Form>
+          {services.map(({ name, port, checked }) => (
+            <Form.Check
+              key={`${checked}${port}`}
+              type={"checkbox"}
+              id={name}
+              label={`${name} (Port ${port})`}
+              checked={checked}
               onChange={({ target }) => {
                 const currentServices = services.filter(
                   service => service.name !== name
@@ -66,20 +74,21 @@ export const ImageServices = () => {
                 setServices(currentServices.sort((a, b) => a.port - b.port));
               }}
             />
-          </label>
-        </p>
-      ))}
-      <input
-        type="submit"
-        value="Reset Services to Default"
-        onClick={resetServices}
-      />
-      <input
-        type="submit"
-        value="Update Services In Use"
-        onClick={updateServices}
-      />
-      <p>{updated}</p>
-    </div>
+          ))}
+        </Form>
+        <ButtonToolbar style={{ marginTop: 5 }}>
+          <Button variant="secondary" onClick={resetServices}>
+            Reset
+          </Button>
+          <Button
+            onClick={updateServices}
+            variant="primary"
+            style={{ marginLeft: 5 }}
+          >
+            Update
+          </Button>
+        </ButtonToolbar>
+      </Card.Body>
+    </Card>
   );
 };

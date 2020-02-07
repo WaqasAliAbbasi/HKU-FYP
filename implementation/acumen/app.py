@@ -7,6 +7,8 @@ from flask import Flask, jsonify, flash, request, redirect, url_for, send_file
 from flask_cors import CORS
 from google.protobuf.json_format import MessageToJson
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
+from tempfile import NamedTemporaryFile
+from shutil import copyfileobj
 
 import yolo_client
 import alpr_client
@@ -99,27 +101,21 @@ def run_pipeline(queue):
         if file.filename == '':
             return 'No selected file'
         if file and allowed_file(file.filename):
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], "predict.jpg")
-            file.save(filepath)
-            # pool = ThreadPoolExecutor(5)
-            # futures = []
             try:
                 os.remove(predictionpath)
             except OSError:
                 pass
-            # for port in [available_yolo_services_separate_nodes.get()]:
-            #     print("Starting at port " + str(port))
-            #     futures.append(pool.submit(
-            #         yolo_client.getYOLOResult, filepath, predictionpath, port, available_yolo_services_separate_nodes))
-            # detections = [future.result() for future in wait(
-            #     futures, return_when="FIRST_COMPLETED")[0]]
-            service = queue.get()
-            print("Starting at port " + str(service['port']))
-            detections = yolo_client.getYOLOResult(
-                filepath, predictionpath, service, queue)
+            pool = ThreadPoolExecutor(5)
+            futures = []
+            for service in [queue.get()]:
+                print("Starting at port " + str(service['port']))
+                futures.append(pool.submit(yolo_client.getYOLOResult,
+                                           file, predictionpath, service, queue))
+            detections = [future.result() for future in wait(
+                futures)[0]]
             plates = []
             if "car" in detections[0]:
-                plates = alpr_client.getALPRResult(filepath, predictionpath)
+                plates = alpr_client.getALPRResult(file, predictionpath)
             return jsonify({"detections": detections, "plates": plates})
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], "prediction.jpg"), attachment_filename="prediction.jpg")
 

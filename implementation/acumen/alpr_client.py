@@ -9,13 +9,13 @@ from google.protobuf.json_format import MessageToJson
 CHUNK_SIZE = 1024 * 1024  # 1MB
 
 
-def get_file_chunks(filename):
-    with open(filename, 'rb') as f:
-        while True:
-            piece = f.read(CHUNK_SIZE)
-            if len(piece) == 0:
-                return
-            yield alpr_pb2.ALPRChunk(buffer=piece)
+def get_file_chunks(file):
+    file.stream.seek(0)
+    while True:
+        piece = file.read(CHUNK_SIZE)
+        if len(piece) == 0:
+            return
+        yield alpr_pb2.ALPRChunk(buffer=piece)
 
 
 def save_chunks_to_file(chunks, filename):
@@ -29,8 +29,8 @@ class FileClient:
         channel = grpc.insecure_channel(address)
         self.stub = alpr_pb2_grpc.ALPRFileServerStub(channel)
 
-    def upload(self, in_file_name):
-        chunks_generator = get_file_chunks(in_file_name)
+    def upload(self, file):
+        chunks_generator = get_file_chunks(file)
         response = self.stub.upload(chunks_generator)
         parsedResponse = json.loads(MessageToJson(response))
         if "plates" in parsedResponse:
@@ -43,8 +43,8 @@ class FileClient:
         save_chunks_to_file(response, out_file_name)
 
 
-def getALPRResult(filepath, predictionpath):
+def getALPRResult(file, predictionpath):
     client = FileClient('localhost:50052')
-    plates = client.upload(filepath)
+    plates = client.upload(file)
 
     return plates

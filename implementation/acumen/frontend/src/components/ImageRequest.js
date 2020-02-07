@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 
 import { API_URL } from "..";
+import { Card, Form, Button, Row, Col } from "react-bootstrap";
 
-export const ImageRequest = () => {
-  const [results, setResults] = useState([]);
+export const ImageRequest = ({ setResults, processing, setProcessing }) => {
   const [files, setFiles] = useState([]);
   const [requests, setRequests] = useState(1);
   const [message, setMessage] = useState("");
-  const [processing, setProcessing] = useState(false);
 
   const sendSingleRequest = (start, number, formData) => {
     return axios
@@ -51,65 +50,41 @@ export const ImageRequest = () => {
       });
   };
   return (
-    <div>
-      <h2>Send Requests</h2>
-      <div>
-        <input
-          type="file"
-          disabled={processing}
-          onChange={e => setFiles(Array.from(e.target.files))}
-        />
-        Concurrent Requests:
-        <input
-          type="number"
-          value={requests}
-          disabled={processing}
-          onChange={e => setRequests(e.target.value)}
-        />
-        <br />
-        <input
-          type="submit"
-          value="Start"
-          onClick={start}
-          disabled={processing}
-        />
-        <p>{message}</p>
-      </div>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ width: "60%" }}>
-          {results
-            .sort((a, b) => a.number - b.number)
-            .map(({ error, number, timeTaken, detections }, index) => {
-              if (error) {
-                return (
-                  <div key={index}>
-                    <div>Error: {error}</div>
-                    <hr />
-                  </div>
-                );
-              }
-              return (
-                <div key={index}>
-                  <div>
-                    <p>Number: {number}</p>
-                    <p>Time Taken: {timeTaken}</p>
-                    <p>{JSON.stringify(detections)}</p>
-                  </div>
-                  <hr />
-                </div>
-              );
-            })}
-        </div>
-        <div style={{ padding: 20, width: "20%" }}>
-          {!processing && message.includes("Done") && (
-            <img
-              src="http://localhost:5000/image"
-              alt="Prediction"
-              style={{ width: "100%" }}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+    <Card>
+      <Card.Header as="h5">Control Panel</Card.Header>
+      <Card.Body>
+        <Form>
+          <Form.Group as={Row}>
+            <Form.Label column sm="4">
+              File:
+            </Form.Label>
+            <Col sm="8">
+              <Form.Control
+                type="file"
+                disabled={processing}
+                onChange={e => setFiles(Array.from(e.target.files))}
+              />
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row}>
+            <Form.Label column sm="4">
+              Concurrent Requests:
+            </Form.Label>
+            <Col sm="8">
+              <Form.Control
+                type="number"
+                value={requests}
+                disabled={processing}
+                onChange={e => setRequests(e.target.value)}
+              />
+            </Col>
+          </Form.Group>
+          <Button onClick={start} variant="primary" disabled={processing}>
+            Start
+          </Button>
+          <p>{message}</p>
+        </Form>
+      </Card.Body>
+    </Card>
   );
 };
