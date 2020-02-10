@@ -51,7 +51,7 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
   };
   return (
     <Card>
-      <Card.Header as="h5">Control Panel</Card.Header>
+      <Card.Header as="h5">Send Requests</Card.Header>
       <Card.Body>
         <Form>
           <Form.Group as={Row}>

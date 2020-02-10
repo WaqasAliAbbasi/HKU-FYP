@@ -52,7 +52,7 @@ def allowed_file(filename):
 
 
 initial = [{"name": "Machine 1 GPU 0", "port": 50053}, {
-    "name": "Machine 1 GPU 1", "port": 50054}, {"name": "Machine 1 GPU All 4", "port": 50055}, {"name": "Machine 2 GPU 0", "port": 50056}, {"name": "Machine 2 GPU All 4", "port": 50057}]
+    "name": "Machine 1 GPU 1", "port": 50054}, {"name": "Machine 1 All 4 GPUs", "port": 50055}, {"name": "Machine 2 GPU 0", "port": 50056}, {"name": "Machine 2 All 4 GPUs", "port": 50057}]
 yolo_services = queue.Queue()
 for service in initial:
     yolo_services.put(service)
@@ -91,9 +91,15 @@ def image():
     return run_pipeline(yolo_services)
 
 
+predictionpath = os.path.join(
+    app.config['UPLOAD_FOLDER'], "prediction.jpg")
+try:
+    os.remove(predictionpath)
+except OSError:
+    pass
+
+
 def run_pipeline(queue):
-    predictionpath = os.path.join(
-        app.config['UPLOAD_FOLDER'], "prediction.jpg")
     if request.method == 'POST':
         if '0' not in request.files:
             return 'No file part'
@@ -117,8 +123,8 @@ def run_pipeline(queue):
             if "car" in detections[0]:
                 plates = alpr_client.getALPRResult(file, predictionpath)
             return jsonify({"detections": detections, "plates": plates})
-    return send_file(os.path.join(app.config['UPLOAD_FOLDER'], "prediction.jpg"), attachment_filename="prediction.jpg")
+    return send_file(predictionpath, attachment_filename="prediction.jpg")
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    app.run(debug=False, threaded=True)

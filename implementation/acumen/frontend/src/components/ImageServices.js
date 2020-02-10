@@ -56,7 +56,7 @@ export const ImageServices = () => {
   };
   return (
     <Card>
-      <Card.Header as="h5">Set YOLO Services in Use</Card.Header>
+      <Card.Header as="h5">Hardware in Use</Card.Header>
       <Card.Body>
         <Form>
           {services.map(({ name, port, checked }) => (
@@ -64,7 +64,7 @@ export const ImageServices = () => {
               key={`${checked}${port}`}
               type={"checkbox"}
               id={name}
-              label={`${name} (Port ${port})`}
+              label={name}
               checked={checked}
               onChange={({ target }) => {
                 const currentServices = services.filter(
