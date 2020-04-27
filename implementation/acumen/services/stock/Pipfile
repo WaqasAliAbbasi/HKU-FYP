@@ -1,19 +1,15 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
-tensorflow = "==1.15.0"
+tensorflow = "==1.15.2"
 grpcio = "*"
 grpcio-tools = "*"
 numpy = "*"
 keras = "*"
 pandas = "*"
 sklearn = "*"
-
 
 [dev-packages]
