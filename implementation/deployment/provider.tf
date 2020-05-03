@@ -29,6 +29,26 @@ variable "yolo5_port" {
   default = 50057
 }
 
+variable "yolo6_port" {
+  default = 50058
+}
+
+variable "yolo7_port" {
+  default = 50059
+}
+
+variable "yolo8_port" {
+  default = 50060
+}
+
+variable "yolo9_port" {
+  default = 50061
+}
+
+variable "yolo10_port" {
+  default = 50062
+}
+
 
 provider "docker" {
   host = "ssh://waqas@202.45.128.184"

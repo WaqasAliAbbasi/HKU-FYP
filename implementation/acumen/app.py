@@ -51,8 +51,16 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-initial = [{"name": "Machine 1 GPU 0", "port": 50053}, {
-    "name": "Machine 1 GPU 1", "port": 50054}, {"name": "Machine 1 All 4 GPUs", "port": 50055}, {"name": "Machine 2 GPU 0", "port": 50056}, {"name": "Machine 2 All 4 GPUs", "port": 50057}]
+initial = [{"name": "Machine 1 GPU 0", "port": 50053},
+    {"name": "Machine 1 GPU 1", "port": 50054},
+    {"name": "Machine 1 GPU 2", "port": 50055},
+    {"name": "Machine 1 GPU 3", "port": 50056},
+    {"name": "Machine 1 All 4 GPUs", "port": 50057},
+    {"name": "Machine 2 GPU 0", "port": 50058},
+    {"name": "Machine 2 GPU 1", "port": 50059},
+    {"name": "Machine 2 GPU 2", "port": 50060},
+    {"name": "Machine 2 GPU 3", "port": 50061},
+    {"name": "Machine 2 All 4 GPUs", "port": 50062}]
 yolo_services = queue.Queue()
 for service in initial:
     yolo_services.put(service)
