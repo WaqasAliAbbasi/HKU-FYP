@@ -51,5 +51,5 @@ variable "yolo10_port" {
 
 
 provider "docker" {
-  host = "ssh://waqas@202.45.128.184"
+  host = "ssh://waqas@202.45.128.185"
 }

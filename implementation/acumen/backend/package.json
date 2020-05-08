@@ -1,0 +1,29 @@
+{
+  "name": "acumen-backend",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "husky": "^4.2.5",
+    "nodemon": "^2.0.3",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "dev": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretty-all": "pretty-quick --since b85c8ba --pattern \"**/*.*(js|jsx|ts|tsx)\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
+}
