@@ -178,8 +178,8 @@ This ultimately allowed an AI model to be easily deployed on a distributed syste
 
 Coming from the same lab as Clipper \cite{Clipper}, InferLine \cite{InferLine}, published in 2018, was a general-purpose specification designed to proactively optimize ML inference pipelines but also reactively control configurations. While generalizing across different frameworks, it achieved 7.6 times cost-savings and 32 times lower SLO miss-rate.
 
-Lastly, GrandSLAm \cite{GrandSLAm}, published in 2019, was a general-purpose serving system built on a microservices architecture.
-It proactively optimized pipelines to meet latency requirements while improving throughput by 3 times.
+Lastly, GrandSLAm \cite{GrandSLAm}, published in 2019, was a general-purpose framework to optimize clusters serving multiple microservice-based applications.
+It increased the throughput of pipelines by three times without sacrificing on latency by batching requests to common microservices.
 
 \section{Shortcomings}
 
@@ -189,10 +189,10 @@ Hence, it is not suitable for complex machine learning pipelines such as the one
 
 Clipper \cite{Clipper} deals with different implementations of the same model. In the case where we have different models in a pipeline, we lose out on its benefits.
 
-InferLine \cite{InferLine} and GrandSLAm \cite{GrandSLAm} are interesting approaches to solving the problems highlighted in section \ref{motivation}.
-However, no standardized way exists to compare them.
-The scheduling techniques and architecture choices also vary.
-Not only that, but public implementations are also unavailable and hence further work cannot be done on them to improve them.
+GrandSLAm \cite{GrandSLAm} is for scenarios where multiple pipelines have tasks i.e. microservices in common. As it is focused on optimizing microservice execution, it is different from our objectives.
+
+InferLine \cite{InferLine} is an interesting approach to solving the problems highlighted in section \ref{motivation}.
+However, a public implementation is unavailable and hence further work cannot be done on it to improve it.
 
 \section{Project Justification}
 
