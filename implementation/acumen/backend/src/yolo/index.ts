@@ -1,6 +1,6 @@
 import grpc from "grpc";
-import { FileServerClient } from "../proto/yolo/proto/chunk_grpc_pb";
-import { Chunk, Request } from "../proto/yolo/proto/chunk_pb";
+import { FileServerClient } from "../generated/proto/yolo/proto/chunk_grpc_pb";
+import { Chunk, Request } from "../generated/proto/yolo/proto/chunk_pb";
 import { splitBuffer } from "../utils";
 
 const client = new FileServerClient(

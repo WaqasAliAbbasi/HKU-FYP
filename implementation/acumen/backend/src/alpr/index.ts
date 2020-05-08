@@ -1,6 +1,6 @@
 import grpc from "grpc";
-import { ALPRFileServerClient } from "../proto/alpr/proto/alpr_grpc_pb";
-import { ALPRChunk } from "../proto/alpr/proto/alpr_pb";
+import { ALPRFileServerClient } from "../generated/proto/alpr/proto/alpr_grpc_pb";
+import { ALPRChunk } from "../generated/proto/alpr/proto/alpr_pb";
 import { splitBuffer } from "../utils";
 
 const client = new ALPRFileServerClient(
@@ -13,8 +13,9 @@ export const getALPRDetections = (image: Buffer): Promise<string[]> =>
     const stream = client.upload((error, response) => {
       if (error) {
         reject(error);
+      } else {
+        resolve(response.getPlatesList());
       }
-      resolve(response.getPlatesList());
     });
 
     const chunks = splitBuffer(image);

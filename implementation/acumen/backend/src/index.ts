@@ -24,7 +24,7 @@ app.get("/stock/:stock_symbol/predict", async (req, res) => {
   res.json(stockPredictions);
 });
 
-app.post("/image", upload.single("0"), async (req, res) => {
+app.post("/yolo", upload.single("0"), async (req, res) => {
   const image = fs.readFileSync(req.file.path);
   const detections = await getYOLODetections(image);
   const plates: string[] = [];
@@ -34,7 +34,7 @@ app.post("/image", upload.single("0"), async (req, res) => {
   res.json({ detections, plates });
 });
 
-app.get("/image", async (req, res) => {
+app.get("/yolo", async (_, res) => {
   res.contentType("image/jpeg");
   res.end(await getYOLOProcessedImage());
 });

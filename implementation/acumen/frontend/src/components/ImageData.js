@@ -39,7 +39,7 @@ export const ImageData = ({ results, processing }) => {
       <div style={{ padding: 20, width: "20%" }}>
         {!processing && (
           <img
-            src="http://localhost:5000/image"
+            src="http://localhost:5000/yolo"
             alt="Prediction"
             style={{ width: "100%" }}
           />

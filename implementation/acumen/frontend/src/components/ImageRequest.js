@@ -11,13 +11,13 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
 
   const sendSingleRequest = (start, number, formData) => {
     return axios
-      .post(`${API_URL}/image`, formData)
-      .then(response => response.data)
-      .then(detections => {
+      .post(`${API_URL}/yolo`, formData)
+      .then((response) => response.data)
+      .then((detections) => {
         const timeTaken = Math.round((Date.now() - start) / 10) / 100;
         return { number, timeTaken, detections };
       })
-      .catch(error => {
+      .catch((error) => {
         return { number, error: error.message };
       });
   };
@@ -39,12 +39,12 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
       promises.push(sendSingleRequest(Date.now(), i, formData));
     }
     Promise.all(promises)
-      .then(response => {
+      .then((response) => {
         setResults(response);
         setProcessing(false);
         setMessage(`Done with ${requests} requests`);
       })
-      .catch(error => {
+      .catch((error) => {
         setProcessing(false);
         setMessage("Error");
       });
@@ -62,7 +62,7 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
               <Form.Control
                 type="file"
                 disabled={processing}
-                onChange={e => setFiles(Array.from(e.target.files))}
+                onChange={(e) => setFiles(Array.from(e.target.files))}
               />
             </Col>
           </Form.Group>
@@ -75,7 +75,7 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
                 type="number"
                 value={requests}
                 disabled={processing}
-                onChange={e => setRequests(e.target.value)}
+                onChange={(e) => setRequests(e.target.value)}
               />
             </Col>
           </Form.Group>

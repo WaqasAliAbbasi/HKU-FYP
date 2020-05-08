@@ -3,7 +3,7 @@
 BASEDIR=$(dirname "$0")
 cd ${BASEDIR}/../
 
-PROTO_DEST=./src/proto
+PROTO_DEST=./src/generated/proto
 
 mkdir -p ${PROTO_DEST}
 

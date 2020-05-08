@@ -1,7 +1,6 @@
 import grpc from "grpc";
-import { StockClient } from "../proto/stock/proto/stock_grpc_pb";
-import { StockSymbol } from "../proto/stock/proto/stock_pb";
-import { splitBuffer } from "../utils";
+import { StockClient } from "../generated/proto/stock/proto/stock_grpc_pb";
+import { StockSymbol } from "../generated/proto/stock/proto/stock_pb";
 
 const client = new StockClient(
   "localhost:50051",
@@ -27,12 +26,13 @@ export const getStockHistory = (
     client.getStockHistory(stockSymbol, (error, response) => {
       if (error) {
         reject(error);
+      } else {
+        resolve(
+          response
+            .getStockHistoryList()
+            .map((stockPrice) => stockPrice.toObject())
+        );
       }
-      resolve(
-        response
-          .getStockHistoryList()
-          .map((stockPrice) => stockPrice.toObject())
-      );
     });
   });
 
@@ -46,6 +46,8 @@ export const getStockPredictions = (
       if (error) {
         reject(error);
       }
-      resolve(response.getPredictionsList());
+      {
+        resolve(response.getPredictionsList());
+      }
     });
   });
