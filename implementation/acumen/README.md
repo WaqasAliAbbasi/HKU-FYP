@@ -4,9 +4,14 @@
 
 `docker-compose up -d`
 
-## How to run
+## 2. Run backend
 
-```
-pipenv shell
-python app.py
-```
+1. `cd backend`
+2. Install dependencies (one-time only): `yarn install`
+3. `yarn nodemon`
+
+## 3. Run frontend
+
+1. `cd frontend`
+2. Install dependencies (one-time only): `yarn install`
+3. `yarn start`
