@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+service Yolo {
+  rpc detectObjects(stream Chunk) returns (Results) {}
+  rpc downloadProcessedImage(Request) returns (stream Chunk) {}
+}
+
+message Chunk {
+  bytes buffer = 1;
+}
+
+message Request {
+  string id = 1;
+}
+
+message ImageAnalysis {
+  string id = 1;
+  repeated string detections = 2;
+}
+
+message Results {
+  repeated ImageAnalysis results = 1;
+}

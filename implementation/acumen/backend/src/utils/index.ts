@@ -14,3 +14,21 @@ export const splitBuffer = (
   }
   return buffers;
 };
+
+export const filter = async <T>(
+  arr: Array<T>,
+  callback: (item: T) => Promise<boolean>
+): Promise<T[]> => {
+  const fail = Symbol();
+  return (
+    await Promise.all(
+      arr.map(async (item) => ((await callback(item)) ? item : fail))
+    )
+  ).filter((i) => i !== fail) as T[];
+};
+
+export const getIntBuffer = (number: number): Buffer => {
+  const buffer = Buffer.allocUnsafe(4);
+  buffer.writeUInt32BE(number);
+  return buffer;
+};

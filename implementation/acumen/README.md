@@ -1,5 +1,9 @@
 # Acumen
 
+## 1. Run Redis
+
+`docker-compose up -d`
+
 ## How to run
 
 ```

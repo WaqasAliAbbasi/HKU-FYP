@@ -21,7 +21,7 @@ do
         cd yolo
         echo "Processing YOLO..."
         pipenv run python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. **/*.proto
-        sed -i '' 's/from proto/from ./g' ./proto/chunk_pb2_grpc.py
+        sed -i '' 's/from proto/from ./g' ./proto/yolo_pb2_grpc.py
 
         docker build -t waqasali/fyp-yolo .
         docker push waqasali/fyp-yolo

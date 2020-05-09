@@ -1,5 +1,5 @@
 // package:
-// file: yolo/proto/chunk.proto
+// file: yolo/proto/yolo.proto
 
 /* tslint:disable */
 /* eslint-disable */
@@ -37,8 +37,8 @@ export namespace Chunk {
 }
 
 export class Request extends jspb.Message {
-  getName(): string;
-  setName(value: string): void;
+  getId(): string;
+  setId(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Request.AsObject;
@@ -60,13 +60,13 @@ export class Request extends jspb.Message {
 
 export namespace Request {
   export type AsObject = {
-    name: string;
+    id: string;
   };
 }
 
-export class Reply extends jspb.Message {
-  getLength(): number;
-  setLength(value: number): void;
+export class ImageAnalysis extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
 
   clearDetectionsList(): void;
   getDetectionsList(): Array<string>;
@@ -74,26 +74,59 @@ export class Reply extends jspb.Message {
   addDetections(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Reply.AsObject;
-  static toObject(includeInstance: boolean, msg: Reply): Reply.AsObject;
+  toObject(includeInstance?: boolean): ImageAnalysis.AsObject;
+  static toObject(
+    includeInstance: boolean,
+    msg: ImageAnalysis
+  ): ImageAnalysis.AsObject;
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
   static extensionsBinary: {
     [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
   };
   static serializeBinaryToWriter(
-    message: Reply,
+    message: ImageAnalysis,
     writer: jspb.BinaryWriter
   ): void;
-  static deserializeBinary(bytes: Uint8Array): Reply;
+  static deserializeBinary(bytes: Uint8Array): ImageAnalysis;
   static deserializeBinaryFromReader(
-    message: Reply,
+    message: ImageAnalysis,
     reader: jspb.BinaryReader
-  ): Reply;
+  ): ImageAnalysis;
 }
 
-export namespace Reply {
+export namespace ImageAnalysis {
   export type AsObject = {
-    length: number;
+    id: string;
     detectionsList: Array<string>;
+  };
+}
+
+export class Results extends jspb.Message {
+  clearResultsList(): void;
+  getResultsList(): Array<ImageAnalysis>;
+  setResultsList(value: Array<ImageAnalysis>): void;
+  addResults(value?: ImageAnalysis, index?: number): ImageAnalysis;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Results.AsObject;
+  static toObject(includeInstance: boolean, msg: Results): Results.AsObject;
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
+  static extensionsBinary: {
+    [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
+  };
+  static serializeBinaryToWriter(
+    message: Results,
+    writer: jspb.BinaryWriter
+  ): void;
+  static deserializeBinary(bytes: Uint8Array): Results;
+  static deserializeBinaryFromReader(
+    message: Results,
+    reader: jspb.BinaryReader
+  ): Results;
+}
+
+export namespace Results {
+  export type AsObject = {
+    resultsList: Array<ImageAnalysis.AsObject>;
   };
 }

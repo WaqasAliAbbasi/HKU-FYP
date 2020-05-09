@@ -1,4 +1,4 @@
 import lib
 
 if __name__ == '__main__':
-    lib.FileServer().start(50051)
+    lib.Yolo().start(50051)

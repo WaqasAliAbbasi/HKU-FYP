@@ -155,5 +155,5 @@ def detect(image_folder):
         plt.savefig(f"output/{filename}.png",
                     bbox_inches="tight", pad_inches=0.0)
         plt.close()
-    return [[classes[int(cls_pred)] for cls_pred in detections[:, -1].cpu().unique()]
-            if detections is not None else [] for detections in img_detections]
+    return [(path,[classes[int(cls_pred)] for cls_pred in detections[:, -1].cpu().unique()])
+            if detections is not None else (path,[]) for path, detections in zip(imgs, img_detections)]

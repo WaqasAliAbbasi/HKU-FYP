@@ -1,42 +1,42 @@
-import grpc from "grpc";
-import { FileServerClient } from "../generated/proto/yolo/proto/chunk_grpc_pb";
-import { Chunk, Request } from "../generated/proto/yolo/proto/chunk_pb";
-import { splitBuffer } from "../utils";
+import Queue from "bull";
+import fs from "fs";
 
-const client = new FileServerClient(
-  "localhost:50059",
-  grpc.credentials.createInsecure()
+import { YOLOWorker } from "./worker";
+import { filter } from "../utils";
+
+const worker = new YOLOWorker(50059);
+
+export const yoloDetectionsQueue = new Queue<{ imagePath: string }>(
+  "yolo object detection"
 );
+yoloDetectionsQueue.empty();
+setInterval(async () => {
+  const jobs = await yoloDetectionsQueue.getWaiting();
+  const activeJobs = await filter(
+    jobs,
+    async (job) => (await job.takeLock()) !== false
+  );
+  if (activeJobs.length) {
+    const detections: any[] = await worker.getYOLODetections(
+      activeJobs.map((job) => fs.readFileSync(job.data.imagePath))
+    );
+    await Promise.all(
+      activeJobs.map(async (job, index) =>
+        job.moveToCompleted(detections[index], false, false)
+      )
+    );
+  }
+}, 3000);
 
-export const getYOLODetections = (image: Buffer): Promise<string[]> =>
-  new Promise((resolve, reject) => {
-    const stream = client.upload((error, response) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(response.getDetectionsList());
-      }
-    });
-
-    const chunks = splitBuffer(image);
-    for (const c of chunks) {
-      const chunk = new Chunk();
-      chunk.setBuffer(new Uint8Array(c));
-      stream.write(chunk);
-    }
-    stream.end();
-  });
-
-export const getYOLOProcessedImage = (): Promise<Buffer> => {
-  const request = new Request();
-  request.setName("NA");
-  return new Promise((resolve, reject) => {
-    const stream = client.download(request);
-    let buffer = Buffer.alloc(0);
-    stream.on("data", (d: Chunk) => {
-      buffer = Buffer.concat([buffer, Buffer.from(d.getBuffer())]);
-    });
-    stream.on("end", () => resolve(buffer));
-    stream.on("error", reject);
-  });
-};
+export const yoloDownloadQueue = new Queue<{ processedImageId: string }>(
+  "yolo processed image download"
+);
+yoloDownloadQueue.empty();
+yoloDownloadQueue.process(async (job, done) => {
+  try {
+    const image = await worker.getYOLOProcessedImage(job.data.processedImageId);
+    done(null, image);
+  } catch (e) {
+    console.log(e);
+  }
+});

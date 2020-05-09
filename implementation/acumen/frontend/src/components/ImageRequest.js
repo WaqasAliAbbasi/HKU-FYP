@@ -13,17 +13,17 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
     return axios
       .post(`${API_URL}/yolo`, formData)
       .then((response) => response.data)
-      .then((detections) => {
+      .then((results) => {
         const timeTaken = Math.round((Date.now() - start) / 10) / 100;
-        return { number, timeTaken, detections };
+        return { number, timeTaken, results };
       })
       .catch((error) => {
         return { number, error: error.message };
       });
   };
   const start = () => {
-    if (files.length !== 1) {
-      setMessage("One file needed");
+    if (files.length < 1) {
+      setMessage("At least one file needed");
       return;
     }
     const formData = new FormData();
@@ -63,6 +63,7 @@ export const ImageRequest = ({ setResults, processing, setProcessing }) => {
                 type="file"
                 disabled={processing}
                 onChange={(e) => setFiles(Array.from(e.target.files))}
+                multiple
               />
             </Col>
           </Form.Group>
