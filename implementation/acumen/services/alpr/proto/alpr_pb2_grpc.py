@@ -17,12 +17,7 @@ class ALPRFileServerStub(object):
     self.upload = channel.stream_unary(
         '/ALPRFileServer/upload',
         request_serializer=proto_dot_alpr__pb2.ALPRChunk.SerializeToString,
-        response_deserializer=proto_dot_alpr__pb2.ALPRReply.FromString,
-        )
-    self.download = channel.unary_stream(
-        '/ALPRFileServer/download',
-        request_serializer=proto_dot_alpr__pb2.ALPRRequest.SerializeToString,
-        response_deserializer=proto_dot_alpr__pb2.ALPRChunk.FromString,
+        response_deserializer=proto_dot_alpr__pb2.ALPRResults.FromString,
         )
 
 
@@ -37,25 +32,13 @@ class ALPRFileServerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
-  def download(self, request, context):
-    # missing associated documentation comment in .proto file
-    pass
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
-
 
 def add_ALPRFileServerServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'upload': grpc.stream_unary_rpc_method_handler(
           servicer.upload,
           request_deserializer=proto_dot_alpr__pb2.ALPRChunk.FromString,
-          response_serializer=proto_dot_alpr__pb2.ALPRReply.SerializeToString,
-      ),
-      'download': grpc.unary_stream_rpc_method_handler(
-          servicer.download,
-          request_deserializer=proto_dot_alpr__pb2.ALPRRequest.FromString,
-          response_serializer=proto_dot_alpr__pb2.ALPRChunk.SerializeToString,
+          response_serializer=proto_dot_alpr__pb2.ALPRResults.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

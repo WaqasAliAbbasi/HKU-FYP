@@ -17,28 +17,15 @@ function deserialize_ALPRChunk(buffer_arg) {
   );
 }
 
-function serialize_ALPRReply(arg) {
-  if (!(arg instanceof alpr_proto_alpr_pb.ALPRReply)) {
-    throw new Error("Expected argument of type ALPRReply");
+function serialize_ALPRResults(arg) {
+  if (!(arg instanceof alpr_proto_alpr_pb.ALPRResults)) {
+    throw new Error("Expected argument of type ALPRResults");
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_ALPRReply(buffer_arg) {
-  return alpr_proto_alpr_pb.ALPRReply.deserializeBinary(
-    new Uint8Array(buffer_arg)
-  );
-}
-
-function serialize_ALPRRequest(arg) {
-  if (!(arg instanceof alpr_proto_alpr_pb.ALPRRequest)) {
-    throw new Error("Expected argument of type ALPRRequest");
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_ALPRRequest(buffer_arg) {
-  return alpr_proto_alpr_pb.ALPRRequest.deserializeBinary(
+function deserialize_ALPRResults(buffer_arg) {
+  return alpr_proto_alpr_pb.ALPRResults.deserializeBinary(
     new Uint8Array(buffer_arg)
   );
 }
@@ -49,22 +36,11 @@ var ALPRFileServerService = (exports.ALPRFileServerService = {
     requestStream: true,
     responseStream: false,
     requestType: alpr_proto_alpr_pb.ALPRChunk,
-    responseType: alpr_proto_alpr_pb.ALPRReply,
+    responseType: alpr_proto_alpr_pb.ALPRResults,
     requestSerialize: serialize_ALPRChunk,
     requestDeserialize: deserialize_ALPRChunk,
-    responseSerialize: serialize_ALPRReply,
-    responseDeserialize: deserialize_ALPRReply,
-  },
-  download: {
-    path: "/ALPRFileServer/download",
-    requestStream: false,
-    responseStream: true,
-    requestType: alpr_proto_alpr_pb.ALPRRequest,
-    responseType: alpr_proto_alpr_pb.ALPRChunk,
-    requestSerialize: serialize_ALPRRequest,
-    requestDeserialize: deserialize_ALPRRequest,
-    responseSerialize: serialize_ALPRChunk,
-    responseDeserialize: deserialize_ALPRChunk,
+    responseSerialize: serialize_ALPRResults,
+    responseDeserialize: deserialize_ALPRResults,
   },
 });
 

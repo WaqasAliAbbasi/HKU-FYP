@@ -36,63 +36,68 @@ export namespace ALPRChunk {
   };
 }
 
-export class ALPRRequest extends jspb.Message {
-  getName(): string;
-  setName(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ALPRRequest.AsObject;
-  static toObject(
-    includeInstance: boolean,
-    msg: ALPRRequest
-  ): ALPRRequest.AsObject;
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
-  static extensionsBinary: {
-    [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
-  };
-  static serializeBinaryToWriter(
-    message: ALPRRequest,
-    writer: jspb.BinaryWriter
-  ): void;
-  static deserializeBinary(bytes: Uint8Array): ALPRRequest;
-  static deserializeBinaryFromReader(
-    message: ALPRRequest,
-    reader: jspb.BinaryReader
-  ): ALPRRequest;
-}
-
-export namespace ALPRRequest {
-  export type AsObject = {
-    name: string;
-  };
-}
-
-export class ALPRReply extends jspb.Message {
+export class ALPRAnalysis extends jspb.Message {
   clearPlatesList(): void;
   getPlatesList(): Array<string>;
   setPlatesList(value: Array<string>): void;
   addPlates(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ALPRReply.AsObject;
-  static toObject(includeInstance: boolean, msg: ALPRReply): ALPRReply.AsObject;
+  toObject(includeInstance?: boolean): ALPRAnalysis.AsObject;
+  static toObject(
+    includeInstance: boolean,
+    msg: ALPRAnalysis
+  ): ALPRAnalysis.AsObject;
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
   static extensionsBinary: {
     [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
   };
   static serializeBinaryToWriter(
-    message: ALPRReply,
+    message: ALPRAnalysis,
     writer: jspb.BinaryWriter
   ): void;
-  static deserializeBinary(bytes: Uint8Array): ALPRReply;
+  static deserializeBinary(bytes: Uint8Array): ALPRAnalysis;
   static deserializeBinaryFromReader(
-    message: ALPRReply,
+    message: ALPRAnalysis,
     reader: jspb.BinaryReader
-  ): ALPRReply;
+  ): ALPRAnalysis;
 }
 
-export namespace ALPRReply {
+export namespace ALPRAnalysis {
   export type AsObject = {
     platesList: Array<string>;
+  };
+}
+
+export class ALPRResults extends jspb.Message {
+  clearResultsList(): void;
+  getResultsList(): Array<ALPRAnalysis>;
+  setResultsList(value: Array<ALPRAnalysis>): void;
+  addResults(value?: ALPRAnalysis, index?: number): ALPRAnalysis;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ALPRResults.AsObject;
+  static toObject(
+    includeInstance: boolean,
+    msg: ALPRResults
+  ): ALPRResults.AsObject;
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
+  static extensionsBinary: {
+    [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
+  };
+  static serializeBinaryToWriter(
+    message: ALPRResults,
+    writer: jspb.BinaryWriter
+  ): void;
+  static deserializeBinary(bytes: Uint8Array): ALPRResults;
+  static deserializeBinaryFromReader(
+    message: ALPRResults,
+    reader: jspb.BinaryReader
+  ): ALPRResults;
+}
+
+export namespace ALPRResults {
+  export type AsObject = {
+    resultsList: Array<ALPRAnalysis.AsObject>;
   };
 }

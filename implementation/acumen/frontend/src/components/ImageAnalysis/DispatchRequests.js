@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-import { API_URL } from "..";
+import { API_URL } from "../..";
 import { Card, Form, Button, Row, Col } from "react-bootstrap";
 
-export const ImageRequest = ({ setResults, processing, setProcessing }) => {
+export const DispatchRequests = ({ setResults, processing, setProcessing }) => {
   const [files, setFiles] = useState([]);
   const [requests, setRequests] = useState(1);
   const [message, setMessage] = useState("");

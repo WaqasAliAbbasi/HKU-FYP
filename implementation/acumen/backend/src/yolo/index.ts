@@ -10,31 +10,33 @@ export const yoloWorkersQueue = new Queue<{
   timeThreshold: number;
   batchSize: number;
 }>("yolo workers");
+
 const getAvailableYoloWorker = (): Promise<YOLOWorker> =>
   new Promise(async (resolve) => {
-    const [yoloWorker] = await yoloWorkersQueue.getWaiting(0, 0);
+    const [yoloWorker] = await yoloWorkersQueue.getWaiting();
     if (yoloWorker) {
-      await yoloWorker.takeLock();
-      await yoloWorker.moveToCompleted();
       const {
         data: { name, port, batchSize, timeThreshold },
       } = yoloWorker;
+      await yoloWorker.moveToCompleted(undefined, true, false);
       resolve(new YOLOWorker({ name, port, timeThreshold, batchSize }));
+    } else {
+      yoloWorkersQueue.on("waiting", async (jobId) => {
+        const job = await yoloWorkersQueue.getJob(jobId);
+        if (job) {
+          const {
+            data: { name, port, batchSize, timeThreshold },
+          } = job;
+          await job.moveToCompleted(undefined, true, false);
+          resolve(new YOLOWorker({ name, port, batchSize, timeThreshold }));
+        }
+      });
     }
-    yoloWorkersQueue.on("waiting", async (jobId) => {
-      const job = await yoloWorkersQueue.getJob(jobId);
-      if (job) {
-        job.moveToCompleted();
-        const {
-          data: { name, port, batchSize, timeThreshold },
-        } = job;
-        resolve(new YOLOWorker({ name, port, batchSize, timeThreshold }));
-      }
-    });
   });
+
 const returnYoloWorker = (yoloWorker: YOLOWorker) => {
   const { name, port, batchSize, timeThreshold } = yoloWorker;
-  yoloWorkersQueue.add({ name, port, batchSize, timeThreshold });
+  return yoloWorkersQueue.add({ name, port, batchSize, timeThreshold });
 };
 
 export const yoloDetectionsQueue = new Queue<{ imagePath: string }>(
@@ -46,11 +48,10 @@ const RECHECK_EVENT = "recheck";
 const processYoloDetection = async () => {
   const worker = await getAvailableYoloWorker();
   const { batchSize, timeThreshold } = worker;
-  console.log(batchSize, timeThreshold);
   const jobs = await yoloDetectionsQueue.getWaiting();
   const filteredJobs =
     jobs.length >= batchSize
-      ? jobs.slice(0, batchSize)
+      ? jobs
       : jobs.filter(
           (job) => new Date().getTime() - job.timestamp >= timeThreshold
         );
@@ -58,10 +59,21 @@ const processYoloDetection = async () => {
     setTimeout(() => yoloDetectionsQueue.emit(RECHECK_EVENT), 1000);
   }
   if (filteredJobs.length) {
-    const activeJobs = await filter(
-      filteredJobs,
-      async (job) => (await job.takeLock()) !== false
-    );
+    let count = 0;
+    const activeJobs = await filter(filteredJobs, async (job) => {
+      if (count >= batchSize) {
+        return false;
+      }
+      const take = (await job.takeLock()) !== false;
+      if (take) {
+        count++;
+        return true;
+      }
+      return false;
+    });
+    if (activeJobs.length !== filteredJobs.length) {
+      setTimeout(() => yoloDetectionsQueue.emit(RECHECK_EVENT), 1000);
+    }
     if (activeJobs.length) {
       const detections: any[] = await worker.getYOLODetections(
         activeJobs.map((job) => fs.readFileSync(job.data.imagePath))
@@ -71,9 +83,10 @@ const processYoloDetection = async () => {
           job.moveToCompleted(detections[index], false, false)
         )
       );
+      console.log("Yolo done");
     }
   }
-  returnYoloWorker(worker);
+  await returnYoloWorker(worker);
 };
 
 yoloDetectionsQueue.on(RECHECK_EVENT, processYoloDetection);

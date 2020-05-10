@@ -1,18 +1,17 @@
 syntax = "proto3";
 
 service ALPRFileServer {
-  rpc upload(stream ALPRChunk) returns (ALPRReply) {}
-  rpc download(ALPRRequest) returns (stream ALPRChunk) {}
+  rpc upload(stream ALPRChunk) returns (ALPRResults) {}
 }
 
 message ALPRChunk {
   bytes buffer = 1;
 }
 
-message ALPRRequest {
-  string name = 1;
+message ALPRAnalysis {
+  repeated string plates = 1;
 }
 
-message ALPRReply {
-  repeated string plates = 1;
+message ALPRResults {
+  repeated ALPRAnalysis results = 1;
 }

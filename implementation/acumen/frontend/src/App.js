@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { Stock, Image, AppBar } from "./components";
+import { Stock, ImageAnalysis, AppBar } from "./components";
 
 export const App = () => (
   <Router>
@@ -10,7 +10,7 @@ export const App = () => (
           <Stock />
         </Route>
         <Route path="/image" exact>
-          <Image />
+          <ImageAnalysis />
         </Route>
       </Switch>
     </AppBar>

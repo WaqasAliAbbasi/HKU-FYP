@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x10proto/alpr.proto\"\x1b\n\tALPRChunk\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\"\x1b\n\x0b\x41LPRRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x1b\n\tALPRReply\x12\x0e\n\x06plates\x18\x01 \x03(\t2`\n\x0e\x41LPRFileServer\x12$\n\x06upload\x12\n.ALPRChunk\x1a\n.ALPRReply\"\x00(\x01\x12(\n\x08\x64ownload\x12\x0c.ALPRRequest\x1a\n.ALPRChunk\"\x00\x30\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x10proto/alpr.proto\"\x1b\n\tALPRChunk\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\"\x1e\n\x0c\x41LPRAnalysis\x12\x0e\n\x06plates\x18\x01 \x03(\t\"-\n\x0b\x41LPRResults\x12\x1e\n\x07results\x18\x01 \x03(\x0b\x32\r.ALPRAnalysis28\n\x0e\x41LPRFileServer\x12&\n\x06upload\x12\n.ALPRChunk\x1a\x0c.ALPRResults\"\x00(\x01\x62\x06proto3')
 )
 
 
@@ -57,46 +57,15 @@ _ALPRCHUNK = _descriptor.Descriptor(
 )
 
 
-_ALPRREQUEST = _descriptor.Descriptor(
-  name='ALPRRequest',
-  full_name='ALPRRequest',
+_ALPRANALYSIS = _descriptor.Descriptor(
+  name='ALPRAnalysis',
+  full_name='ALPRAnalysis',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='ALPRRequest.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=49,
-  serialized_end=76,
-)
-
-
-_ALPRREPLY = _descriptor.Descriptor(
-  name='ALPRReply',
-  full_name='ALPRReply',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='plates', full_name='ALPRReply.plates', index=0,
+      name='plates', full_name='ALPRAnalysis.plates', index=0,
       number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -114,13 +83,45 @@ _ALPRREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=78,
-  serialized_end=105,
+  serialized_start=49,
+  serialized_end=79,
 )
 
+
+_ALPRRESULTS = _descriptor.Descriptor(
+  name='ALPRResults',
+  full_name='ALPRResults',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='results', full_name='ALPRResults.results', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=81,
+  serialized_end=126,
+)
+
+_ALPRRESULTS.fields_by_name['results'].message_type = _ALPRANALYSIS
 DESCRIPTOR.message_types_by_name['ALPRChunk'] = _ALPRCHUNK
-DESCRIPTOR.message_types_by_name['ALPRRequest'] = _ALPRREQUEST
-DESCRIPTOR.message_types_by_name['ALPRReply'] = _ALPRREPLY
+DESCRIPTOR.message_types_by_name['ALPRAnalysis'] = _ALPRANALYSIS
+DESCRIPTOR.message_types_by_name['ALPRResults'] = _ALPRRESULTS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ALPRChunk = _reflection.GeneratedProtocolMessageType('ALPRChunk', (_message.Message,), {
@@ -130,19 +131,19 @@ ALPRChunk = _reflection.GeneratedProtocolMessageType('ALPRChunk', (_message.Mess
   })
 _sym_db.RegisterMessage(ALPRChunk)
 
-ALPRRequest = _reflection.GeneratedProtocolMessageType('ALPRRequest', (_message.Message,), {
-  'DESCRIPTOR' : _ALPRREQUEST,
+ALPRAnalysis = _reflection.GeneratedProtocolMessageType('ALPRAnalysis', (_message.Message,), {
+  'DESCRIPTOR' : _ALPRANALYSIS,
   '__module__' : 'proto.alpr_pb2'
-  # @@protoc_insertion_point(class_scope:ALPRRequest)
+  # @@protoc_insertion_point(class_scope:ALPRAnalysis)
   })
-_sym_db.RegisterMessage(ALPRRequest)
+_sym_db.RegisterMessage(ALPRAnalysis)
 
-ALPRReply = _reflection.GeneratedProtocolMessageType('ALPRReply', (_message.Message,), {
-  'DESCRIPTOR' : _ALPRREPLY,
+ALPRResults = _reflection.GeneratedProtocolMessageType('ALPRResults', (_message.Message,), {
+  'DESCRIPTOR' : _ALPRRESULTS,
   '__module__' : 'proto.alpr_pb2'
-  # @@protoc_insertion_point(class_scope:ALPRReply)
+  # @@protoc_insertion_point(class_scope:ALPRResults)
   })
-_sym_db.RegisterMessage(ALPRReply)
+_sym_db.RegisterMessage(ALPRResults)
 
 
 
@@ -152,8 +153,8 @@ _ALPRFILESERVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=107,
-  serialized_end=203,
+  serialized_start=128,
+  serialized_end=184,
   methods=[
   _descriptor.MethodDescriptor(
     name='upload',
@@ -161,16 +162,7 @@ _ALPRFILESERVER = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_ALPRCHUNK,
-    output_type=_ALPRREPLY,
-    serialized_options=None,
-  ),
-  _descriptor.MethodDescriptor(
-    name='download',
-    full_name='ALPRFileServer.download',
-    index=1,
-    containing_service=None,
-    input_type=_ALPRREQUEST,
-    output_type=_ALPRCHUNK,
+    output_type=_ALPRRESULTS,
     serialized_options=None,
   ),
 ])

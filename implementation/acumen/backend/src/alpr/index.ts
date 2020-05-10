@@ -1,28 +1,97 @@
-import grpc from "grpc";
-import { ALPRFileServerClient } from "../generated/proto/alpr/proto/alpr_grpc_pb";
-import { ALPRChunk } from "../generated/proto/alpr/proto/alpr_pb";
-import { splitBuffer } from "../utils";
+import Queue from "bull";
+import fs from "fs";
 
-const client = new ALPRFileServerClient(
-  "localhost:50052",
-  grpc.credentials.createInsecure()
-);
+import { AlprWorker } from "./worker";
+import { filter } from "../utils";
 
-export const getALPRDetections = (image: Buffer): Promise<string[]> =>
-  new Promise((resolve, reject) => {
-    const stream = client.upload((error, response) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(response.getPlatesList());
-      }
-    });
+export const alprWorkersQueue = new Queue<{
+  name: string;
+  port: number;
+  timeThreshold: number;
+  batchSize: number;
+}>("alpr detection workers", {
+  defaultJobOptions: { removeOnComplete: true },
+});
 
-    const chunks = splitBuffer(image);
-    for (const c of chunks) {
-      const chunk = new ALPRChunk();
-      chunk.setBuffer(new Uint8Array(c));
-      stream.write(chunk);
+const getAvailableAlprWorker = (): Promise<AlprWorker> =>
+  new Promise(async (resolve) => {
+    const [alprWorker] = await alprWorkersQueue.getWaiting();
+    if (alprWorker) {
+      const {
+        data: { name, port, batchSize, timeThreshold },
+      } = alprWorker;
+      await alprWorker.moveToCompleted(undefined, true, false);
+      resolve(new AlprWorker({ name, port, timeThreshold, batchSize }));
+    } else {
+      alprWorkersQueue.on("waiting", async (jobId) => {
+        const job = await alprWorkersQueue.getJob(jobId);
+        if (job) {
+          const {
+            data: { name, port, batchSize, timeThreshold },
+          } = job;
+          await job.moveToCompleted(undefined, true, false);
+          resolve(new AlprWorker({ name, port, batchSize, timeThreshold }));
+        }
+      });
     }
-    stream.end();
   });
+
+const returnAlprWorker = (alprWorker: AlprWorker) => {
+  const { name, port, batchSize, timeThreshold } = alprWorker;
+  return alprWorkersQueue.add({ name, port, batchSize, timeThreshold }, {});
+};
+
+export const alprDetectionsQueue = new Queue<{ imagePath: string }>(
+  "alpr detection",
+  {
+    defaultJobOptions: { removeOnComplete: true, removeOnFail: true },
+  }
+);
+alprDetectionsQueue.empty();
+const RECHECK_EVENT = "recheck";
+
+const processAlprDetection = async () => {
+  const worker = await getAvailableAlprWorker();
+  const { batchSize, timeThreshold } = worker;
+  const jobs = await alprDetectionsQueue.getWaiting();
+  const filteredJobs =
+    jobs.length >= batchSize
+      ? jobs
+      : jobs.filter(
+          (job) => new Date().getTime() - job.timestamp >= timeThreshold
+        );
+  if (filteredJobs.length !== jobs.length) {
+    setTimeout(() => alprDetectionsQueue.emit(RECHECK_EVENT), 1000);
+  }
+  if (filteredJobs.length) {
+    let count = 0;
+    const activeJobs = await filter(filteredJobs, async (job) => {
+      if (count >= batchSize) {
+        return false;
+      }
+      const take = (await job.takeLock()) !== false;
+      if (take) {
+        count++;
+        return true;
+      }
+      return false;
+    });
+    if (activeJobs.length !== filteredJobs.length) {
+      setTimeout(() => alprDetectionsQueue.emit(RECHECK_EVENT), 1000);
+    }
+    if (activeJobs.length) {
+      const results: any[] = await worker.getALPRDetections(
+        activeJobs.map((job) => fs.readFileSync(job.data.imagePath))
+      );
+      await Promise.all(
+        activeJobs.map(async (job, index) => {
+          await job.moveToCompleted(results[index] || [], false, false);
+        })
+      );
+    }
+  }
+  await returnAlprWorker(worker);
+};
+
+alprDetectionsQueue.on(RECHECK_EVENT, processAlprDetection);
+alprDetectionsQueue.on("waiting", processAlprDetection);

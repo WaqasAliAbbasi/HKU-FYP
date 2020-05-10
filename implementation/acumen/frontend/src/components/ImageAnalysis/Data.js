@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 
-export const ImageData = ({ results, processing }) => {
+export const Data = ({ results }) => {
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
       <Table striped hover>

@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import { ImageRequest } from "./ImageRequest";
-import { ImageServices } from "./ImageServices";
+import { DispatchRequests } from "./DispatchRequests";
+import { ResourceDistribution } from "./ResourceDistribution";
 import { Container, Row, Col } from "react-bootstrap";
-import { ImageData } from "./ImageData";
+import { Data } from "./Data";
 
-export const Image = () => {
+export const ImageAnalysis = () => {
   const [results, setResults] = useState([]);
   const [processing, setProcessing] = useState(false);
   return (
     <Container fluid>
       <Row>
         <Col>
-          <ImageServices />
+          <ResourceDistribution />
         </Col>
         <Col>
-          <ImageRequest
+          <DispatchRequests
             setResults={setResults}
             processing={processing}
             setProcessing={setProcessing}
@@ -23,7 +23,7 @@ export const Image = () => {
       </Row>
       <Row style={{ marginTop: 10 }}>
         <Col>
-          <ImageData results={results} processing={processing} />
+          <Data results={results} />
         </Col>
       </Row>
     </Container>

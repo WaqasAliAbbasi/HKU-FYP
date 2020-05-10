@@ -1,3 +1,3 @@
 export { Stock } from "./Stock";
-export { Image } from "./Image";
+export { ImageAnalysis } from "./ImageAnalysis";
 export { AppBar } from "./AppBar";
