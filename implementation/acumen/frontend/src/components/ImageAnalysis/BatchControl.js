@@ -75,6 +75,8 @@ export const BatchControl = ({ serviceEndpoint }) => {
                   currentServices.push({
                     name,
                     port,
+                    batchSize,
+                    timeThreshold,
                     checked: target.checked,
                   });
                   setServices(currentServices.sort((a, b) => a.port - b.port));

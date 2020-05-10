@@ -23,9 +23,10 @@ const processYoloDetection = async () => {
   const filteredJobs =
     jobs.length >= batchSize
       ? jobs
-      : jobs.filter(
-          (job) => new Date().getTime() - job.timestamp >= timeThreshold
-        );
+      : jobs.filter((job) => {
+          const td = new Date().getTime() - job.timestamp;
+          return td >= timeThreshold;
+        });
   if (filteredJobs.length !== jobs.length) {
     setTimeout(() => {
       yoloDetectionsQueue.emit(RECHECK_EVENT);

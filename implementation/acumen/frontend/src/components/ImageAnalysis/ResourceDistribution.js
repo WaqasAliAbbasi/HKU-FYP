@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Card, Tabs, Tab, TabContent } from "react-bootstrap";
+import { Accordion, Card, Tabs, Tab } from "react-bootstrap";
 
 import CurrentImageService from "./CurrentImageService.png";
 import { BatchControl } from "./BatchControl";
