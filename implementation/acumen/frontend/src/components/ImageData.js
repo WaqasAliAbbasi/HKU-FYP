@@ -31,9 +31,9 @@ export const ImageData = ({ results, processing }) => {
                   <td>{timeTaken}</td>
                   <td>{JSON.stringify(results)}</td>
                   <td>
-                    {results.map(({ id }) => (
+                    {results.map(({ id, port }) => (
                       <img
-                        src={`http://localhost:5000/yolo/${id}`}
+                        src={`http://localhost:5000/yolo/${port}/${id}`}
                         alt={id}
                         style={{ width: 150 }}
                       />

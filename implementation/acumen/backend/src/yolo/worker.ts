@@ -6,11 +6,16 @@ import { splitBuffer, getIntBuffer } from "../utils";
 export interface ImageAnalysis {
   id: string;
   detections: string[];
+  port: number;
 }
 
 export class YOLOWorker {
   client: YoloClient;
-  constructor(port: number) {
+  name: string;
+  port: number;
+  constructor(name: string, port: number) {
+    this.name = name;
+    this.port = port;
     this.client = new YoloClient(
       `localhost:${port}`,
       grpc.credentials.createInsecure()
@@ -27,6 +32,7 @@ export class YOLOWorker {
             response.getResultsList().map((imageAnalysis) => ({
               id: imageAnalysis.getId(),
               detections: imageAnalysis.getDetectionsList(),
+              port: this.port,
             }))
           );
         }

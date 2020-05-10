@@ -3,13 +3,18 @@ import cors from "cors";
 import multer from "multer";
 import fs from "fs";
 
-import { yoloDetectionsQueue, yoloDownloadQueue } from "./yolo";
+import {
+  yoloDetectionsQueue,
+  yoloDownloadQueue,
+  yoloWorkersQueue,
+} from "./yolo";
 import { getALPRDetections } from "./alpr";
 import { getStockHistory, getStockPredictions } from "./stock";
 import { ImageAnalysis } from "./yolo/worker";
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 const upload = multer({ dest: "/tmp" });
 
 app.get("/stock/:stock_symbol", async (req, res) => {
@@ -23,10 +28,6 @@ app.get("/stock/:stock_symbol/predict", async (req, res) => {
   const stockPredictions = await getStockPredictions(stockSymbol);
   res.json(stockPredictions);
 });
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 app.post("/yolo", upload.any(), async (req, res) => {
   const files = Array.isArray(req.files)
@@ -52,11 +53,12 @@ app.post("/yolo", upload.any(), async (req, res) => {
   res.json(resultsAfterAlpr);
 });
 
-app.get("/yolo/:processed_image_id", async (req, res) => {
+app.get("/yolo/:port/:processed_image_id", async (req, res) => {
+  const port = parseInt(req.params["port"]);
   const processedImageId = req.params["processed_image_id"];
-  if (processedImageId) {
+  if (port && processedImageId) {
     const response = await (
-      await yoloDownloadQueue.add({ processedImageId })
+      await yoloDownloadQueue.add({ processedImageId, port })
     ).finished();
     const processedImage = Buffer.from(response.data);
     res.contentType("image/jpeg");
@@ -65,11 +67,11 @@ app.get("/yolo/:processed_image_id", async (req, res) => {
 });
 
 const initial = [
-  { name: "Machine 1 GPU 0", port: 50053 },
-  { name: "Machine 1 GPU 1", port: 50054 },
-  { name: "Machine 1 GPU 2", port: 50055 },
-  { name: "Machine 1 GPU 3", port: 50056 },
-  { name: "Machine 1 All 4 GPUs", port: 50057 },
+  // { name: "Machine 1 GPU 0", port: 50053 },
+  // { name: "Machine 1 GPU 1", port: 50054 },
+  // { name: "Machine 1 GPU 2", port: 50055 },
+  // { name: "Machine 1 GPU 3", port: 50056 },
+  // { name: "Machine 1 All 4 GPUs", port: 50057 },
   { name: "Machine 2 GPU 0", port: 50058 },
   { name: "Machine 2 GPU 1", port: 50059 },
   { name: "Machine 2 GPU 2", port: 50060 },
@@ -77,8 +79,40 @@ const initial = [
   { name: "Machine 2 All 4 GPUs", port: 50062 },
 ];
 
-app.get("/yolo_services/reset", (_, res) => res.json(initial));
-app.get("/yolo_services", (_, res) => res.json(initial));
-app.post("/yolo_services", (_, res) => res.json(initial));
+const setYoloWorkers = async (input: typeof initial) => {
+  await yoloWorkersQueue.empty();
+  await Promise.all(
+    ["wait", "active", "completed"].map((status: any) =>
+      yoloWorkersQueue.clean(0, status)
+    )
+  );
+  for (const { name, port } of input) {
+    await yoloWorkersQueue.add({ name, port });
+  }
+  console.log(
+    await yoloWorkersQueue.getJobs(["waiting", "active", "completed"])
+  );
+};
+
+setYoloWorkers(initial);
+
+const getActiveYoloWorkers = async () => {
+  return ((await yoloWorkersQueue.getJobs(["waiting"])) || []).map(
+    ({ data }) => data
+  );
+};
+
+app.get("/yolo_services/reset", async (_, res) => {
+  await setYoloWorkers(initial);
+  res.json(await getActiveYoloWorkers());
+});
+app.get("/yolo_services", async (_, res) => {
+  res.json(await getActiveYoloWorkers());
+});
+
+app.post("/yolo_services", async (req, res) => {
+  await setYoloWorkers(req.body);
+  res.json(await getActiveYoloWorkers());
+});
 
 export { app };
