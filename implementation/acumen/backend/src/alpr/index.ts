@@ -3,42 +3,10 @@ import fs from "fs";
 
 import { AlprWorker } from "./worker";
 import { filter } from "../utils";
-
-export const alprWorkersQueue = new Queue<{
-  name: string;
-  port: number;
-  timeThreshold: number;
-  batchSize: number;
-}>("alpr detection workers", {
-  defaultJobOptions: { removeOnComplete: true },
-});
-
-const getAvailableAlprWorker = (): Promise<AlprWorker> =>
-  new Promise(async (resolve) => {
-    const [alprWorker] = await alprWorkersQueue.getWaiting();
-    if (alprWorker) {
-      const {
-        data: { name, port, batchSize, timeThreshold },
-      } = alprWorker;
-      await alprWorker.moveToCompleted(undefined, true, false);
-      resolve(new AlprWorker({ name, port, timeThreshold, batchSize }));
-    } else {
-      alprWorkersQueue.on("waiting", async (jobId) => {
-        const job = await alprWorkersQueue.getJob(jobId);
-        if (job) {
-          const {
-            data: { name, port, batchSize, timeThreshold },
-          } = job;
-          await job.moveToCompleted(undefined, true, false);
-          resolve(new AlprWorker({ name, port, batchSize, timeThreshold }));
-        }
-      });
-    }
-  });
+import { alprWorkerQueue } from "./workerQueue";
 
 const returnAlprWorker = (alprWorker: AlprWorker) => {
-  const { name, port, batchSize, timeThreshold } = alprWorker;
-  return alprWorkersQueue.add({ name, port, batchSize, timeThreshold }, {});
+  return alprWorkerQueue.add(alprWorker);
 };
 
 export const alprDetectionsQueue = new Queue<{ imagePath: string }>(
@@ -51,7 +19,7 @@ alprDetectionsQueue.empty();
 const RECHECK_EVENT = "recheck";
 
 const processAlprDetection = async () => {
-  const worker = await getAvailableAlprWorker();
+  const worker = await alprWorkerQueue.pop();
   const { batchSize, timeThreshold } = worker;
   const jobs = await alprDetectionsQueue.getWaiting();
   const filteredJobs =
@@ -65,17 +33,15 @@ const processAlprDetection = async () => {
   }
   if (filteredJobs.length) {
     let count = 0;
-    const activeJobs = await filter(filteredJobs, async (job) => {
-      if (count >= batchSize) {
-        return false;
-      }
-      const take = (await job.takeLock()) !== false;
-      if (take) {
+    const activeJobs: typeof filteredJobs[0][] = [];
+    let i = 0;
+    while (count < batchSize && i < filteredJobs.length) {
+      if ((await filteredJobs[i].takeLock()) !== false) {
         count++;
-        return true;
+        activeJobs.push(filteredJobs[i]);
       }
-      return false;
-    });
+      i++;
+    }
     if (activeJobs.length !== filteredJobs.length) {
       setTimeout(() => alprDetectionsQueue.emit(RECHECK_EVENT), 1000);
     }
@@ -90,7 +56,7 @@ const processAlprDetection = async () => {
       );
     }
   }
-  await returnAlprWorker(worker);
+  returnAlprWorker(worker);
 };
 
 alprDetectionsQueue.on(RECHECK_EVENT, processAlprDetection);

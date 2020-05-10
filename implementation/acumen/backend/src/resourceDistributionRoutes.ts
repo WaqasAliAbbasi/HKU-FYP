@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { yoloWorkersQueue } from "./yolo";
-import { alprWorkersQueue } from "./alpr";
+import { alprWorkerQueue, yoloWorkerQueue } from "./alpr/workerQueue";
+import { AlprWorker } from "./alpr/worker";
+import { YOLOWorker } from "./yolo/worker";
 
 const resourceDistributionRoutes = Router();
 
@@ -10,35 +11,37 @@ const initialYolo = [
   // { name: "Machine 1 GPU 2", port: 50055 },
   // { name: "Machine 1 GPU 3", port: 50056 },
   // { name: "Machine 1 All 4 GPUs", port: 50057 },
-  // { name: "Machine 2 GPU 0", port: 50058, batchSize: 3, timeThreshold: 3000 },
-  { name: "Machine 2 GPU 1", port: 50059, batchSize: 3, timeThreshold: 3000 },
-  { name: "Machine 2 GPU 2", port: 50060, batchSize: 3, timeThreshold: 3000 },
-  { name: "Machine 2 GPU 3", port: 50061, batchSize: 3, timeThreshold: 3000 },
+  { name: "185 CPU 11 GPU 0", port: 50058, batchSize: 1, timeThreshold: 3000 },
+  { name: "185 CPU 11 GPU 1", port: 50059, batchSize: 1, timeThreshold: 3000 },
+  { name: "185 CPU 12 GPU 2", port: 50060, batchSize: 1, timeThreshold: 3000 },
+  { name: "185 CPU 13 GPU 3", port: 50061, batchSize: 1, timeThreshold: 3000 },
   {
-    name: "Machine 2 All 4 GPUs",
+    name: "185 CPU 14 GPU All",
     port: 50062,
-    batchSize: 3,
+    batchSize: 1,
     timeThreshold: 3000,
   },
 ];
 
 const setYoloWorkers = async (input: typeof initialYolo) => {
-  await yoloWorkersQueue.empty();
-  await Promise.all(
-    ["wait", "active", "failed", "completed", "delayed"].map((status: any) =>
-      yoloWorkersQueue.clean(0, status)
-    )
-  );
+  yoloWorkerQueue.empty();
   for (const { name, port, batchSize, timeThreshold } of input) {
-    await yoloWorkersQueue.add({ name, port, batchSize, timeThreshold });
+    yoloWorkerQueue.add(
+      new YOLOWorker({ name, port, batchSize, timeThreshold })
+    );
   }
 };
 
 setYoloWorkers(initialYolo);
 
 const getActiveYoloWorkers = async () => {
-  return ((await yoloWorkersQueue.getJobs(["waiting"])) || []).map(
-    ({ data }) => data
+  return yoloWorkerQueue.workers.map(
+    ({ name, port, batchSize, timeThreshold }) => ({
+      name,
+      port,
+      batchSize,
+      timeThreshold,
+    })
   );
 };
 
@@ -56,26 +59,31 @@ resourceDistributionRoutes.post("/yolo_services", async (req, res) => {
 });
 
 const initialAlpr = [
-  { name: "Machine 2 CPU 1", port: 50052, batchSize: 3, timeThreshold: 3000 },
+  { name: "185 CPU 15", port: 50052, batchSize: 1, timeThreshold: 3000 },
+  { name: "185 CPU 16", port: 50063, batchSize: 1, timeThreshold: 3000 },
+  { name: "185 CPU 17", port: 50064, batchSize: 1, timeThreshold: 3000 },
+  { name: "185 CPU 18", port: 50065, batchSize: 1, timeThreshold: 3000 },
 ];
 
 const setAlprWorkers = async (input: typeof initialAlpr) => {
-  await alprWorkersQueue.empty();
-  await Promise.all(
-    ["wait", "active", "failed", "completed", "delayed"].map((status: any) =>
-      yoloWorkersQueue.clean(0, status)
-    )
-  );
+  alprWorkerQueue.empty();
   for (const { name, port, batchSize, timeThreshold } of input) {
-    await alprWorkersQueue.add({ name, port, batchSize, timeThreshold });
+    alprWorkerQueue.add(
+      new AlprWorker({ name, port, batchSize, timeThreshold })
+    );
   }
 };
 
 setAlprWorkers(initialAlpr);
 
 const getActiveAlprWorkers = async () => {
-  return ((await alprWorkersQueue.getJobs(["waiting"])) || []).map(
-    ({ data }) => data
+  return alprWorkerQueue.workers.map(
+    ({ name, port, batchSize, timeThreshold }) => ({
+      name,
+      port,
+      batchSize,
+      timeThreshold,
+    })
   );
 };
 

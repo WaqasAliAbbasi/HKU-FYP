@@ -57,11 +57,11 @@ resource "null_resource" "yolo-machine2" {
       "docker rm -f yolo-service-9 2> /dev/null",
       "docker rm -f yolo-service-10 2> /dev/null",
       "docker pull waqasali/fyp-yolo",
-      "docker run --name yolo-service-6 --cpuset-cpus=0	--pid=host -p ${var.yolo6_port}:50051 --gpus device=0 -d waqasali/fyp-yolo",
-      "docker run --name yolo-service-7 --cpuset-cpus=1 --pid=host -p ${var.yolo7_port}:50051 --gpus device=1 -d waqasali/fyp-yolo",
-      "docker run --name yolo-service-8 --cpuset-cpus=2 --pid=host -p ${var.yolo8_port}:50051 --gpus device=2 -d waqasali/fyp-yolo",
-      "docker run --name yolo-service-9 --cpuset-cpus=3 --pid=host -p ${var.yolo9_port}:50051 --gpus device=3 -d waqasali/fyp-yolo",
-      "docker run --name yolo-service-10 --cpuset-cpus=4 --pid=host -p ${var.yolo10_port}:50051 --gpus all -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-6 --cpuset-cpus=10	--pid=host -p ${var.yolo6_port}:50051 --gpus device=0 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-7 --cpuset-cpus=11 --pid=host -p ${var.yolo7_port}:50051 --gpus device=1 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-8 --cpuset-cpus=12 --pid=host -p ${var.yolo8_port}:50051 --gpus device=2 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-9 --cpuset-cpus=13 --pid=host -p ${var.yolo9_port}:50051 --gpus device=3 -d waqasali/fyp-yolo",
+      "docker run --name yolo-service-10 --cpuset-cpus=14 --pid=host -p ${var.yolo10_port}:50051 --gpus all -d waqasali/fyp-yolo",
     ]
   }
 

@@ -3,40 +3,10 @@ import fs from "fs";
 
 import { YOLOWorker } from "./worker";
 import { filter } from "../utils";
-
-export const yoloWorkersQueue = new Queue<{
-  name: string;
-  port: number;
-  timeThreshold: number;
-  batchSize: number;
-}>("yolo workers");
-
-const getAvailableYoloWorker = (): Promise<YOLOWorker> =>
-  new Promise(async (resolve) => {
-    const [yoloWorker] = await yoloWorkersQueue.getWaiting();
-    if (yoloWorker) {
-      const {
-        data: { name, port, batchSize, timeThreshold },
-      } = yoloWorker;
-      await yoloWorker.moveToCompleted(undefined, true, false);
-      resolve(new YOLOWorker({ name, port, timeThreshold, batchSize }));
-    } else {
-      yoloWorkersQueue.on("waiting", async (jobId) => {
-        const job = await yoloWorkersQueue.getJob(jobId);
-        if (job) {
-          const {
-            data: { name, port, batchSize, timeThreshold },
-          } = job;
-          await job.moveToCompleted(undefined, true, false);
-          resolve(new YOLOWorker({ name, port, batchSize, timeThreshold }));
-        }
-      });
-    }
-  });
+import { yoloWorkerQueue } from "../alpr/workerQueue";
 
 const returnYoloWorker = (yoloWorker: YOLOWorker) => {
-  const { name, port, batchSize, timeThreshold } = yoloWorker;
-  return yoloWorkersQueue.add({ name, port, batchSize, timeThreshold });
+  return yoloWorkerQueue.add(yoloWorker);
 };
 
 export const yoloDetectionsQueue = new Queue<{ imagePath: string }>(
@@ -46,8 +16,9 @@ yoloDetectionsQueue.empty();
 const RECHECK_EVENT = "recheck";
 
 const processYoloDetection = async () => {
-  const worker = await getAvailableYoloWorker();
+  const worker = await yoloWorkerQueue.pop();
   const { batchSize, timeThreshold } = worker;
+
   const jobs = await yoloDetectionsQueue.getWaiting();
   const filteredJobs =
     jobs.length >= batchSize
@@ -56,21 +27,21 @@ const processYoloDetection = async () => {
           (job) => new Date().getTime() - job.timestamp >= timeThreshold
         );
   if (filteredJobs.length !== jobs.length) {
-    setTimeout(() => yoloDetectionsQueue.emit(RECHECK_EVENT), 1000);
+    setTimeout(() => {
+      yoloDetectionsQueue.emit(RECHECK_EVENT);
+    }, 1000);
   }
   if (filteredJobs.length) {
     let count = 0;
-    const activeJobs = await filter(filteredJobs, async (job) => {
-      if (count >= batchSize) {
-        return false;
-      }
-      const take = (await job.takeLock()) !== false;
-      if (take) {
+    const activeJobs: typeof filteredJobs[0][] = [];
+    let i = 0;
+    while (count < batchSize && i < filteredJobs.length) {
+      if ((await filteredJobs[i].takeLock()) !== false) {
         count++;
-        return true;
+        activeJobs.push(filteredJobs[i]);
       }
-      return false;
-    });
+      i++;
+    }
     if (activeJobs.length !== filteredJobs.length) {
       setTimeout(() => yoloDetectionsQueue.emit(RECHECK_EVENT), 1000);
     }
@@ -83,10 +54,9 @@ const processYoloDetection = async () => {
           job.moveToCompleted(detections[index], false, false)
         )
       );
-      console.log("Yolo done");
     }
   }
-  await returnYoloWorker(worker);
+  returnYoloWorker(worker);
 };
 
 yoloDetectionsQueue.on(RECHECK_EVENT, processYoloDetection);

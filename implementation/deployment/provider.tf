@@ -9,6 +9,17 @@ variable "alpr1_port" {
   default = 50052
 }
 
+variable "alpr2_port" {
+  default = 50063
+}
+variable "alpr3_port" {
+  default = 50064
+}
+variable "alpr4_port" {
+  default = 50065
+}
+
+
 variable "yolo1_port" {
   default = 50053
 }
