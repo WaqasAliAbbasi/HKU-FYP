@@ -9,13 +9,24 @@ export interface ImageAnalysis {
   port: number;
 }
 
+interface Input {
+  name: string;
+  port: number;
+  batchSize: number;
+  timeThreshold: number;
+}
+
 export class YOLOWorker {
   client: YoloClient;
   name: string;
   port: number;
-  constructor(name: string, port: number) {
+  timeThreshold: number;
+  batchSize: number;
+  constructor({ name, port, timeThreshold, batchSize }: Input) {
     this.name = name;
     this.port = port;
+    this.timeThreshold = timeThreshold;
+    this.batchSize = batchSize;
     this.client = new YoloClient(
       `localhost:${port}`,
       grpc.credentials.createInsecure()

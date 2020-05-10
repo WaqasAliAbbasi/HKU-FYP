@@ -72,11 +72,16 @@ const initial = [
   // { name: "Machine 1 GPU 2", port: 50055 },
   // { name: "Machine 1 GPU 3", port: 50056 },
   // { name: "Machine 1 All 4 GPUs", port: 50057 },
-  { name: "Machine 2 GPU 0", port: 50058 },
-  { name: "Machine 2 GPU 1", port: 50059 },
-  { name: "Machine 2 GPU 2", port: 50060 },
-  { name: "Machine 2 GPU 3", port: 50061 },
-  { name: "Machine 2 All 4 GPUs", port: 50062 },
+  { name: "Machine 2 GPU 0", port: 50058, batchSize: 3, timeThreshold: 3000 },
+  { name: "Machine 2 GPU 1", port: 50059, batchSize: 3, timeThreshold: 3000 },
+  { name: "Machine 2 GPU 2", port: 50060, batchSize: 3, timeThreshold: 3000 },
+  { name: "Machine 2 GPU 3", port: 50061, batchSize: 3, timeThreshold: 3000 },
+  {
+    name: "Machine 2 All 4 GPUs",
+    port: 50062,
+    batchSize: 3,
+    timeThreshold: 3000,
+  },
 ];
 
 const setYoloWorkers = async (input: typeof initial) => {
@@ -86,12 +91,9 @@ const setYoloWorkers = async (input: typeof initial) => {
       yoloWorkersQueue.clean(0, status)
     )
   );
-  for (const { name, port } of input) {
-    await yoloWorkersQueue.add({ name, port });
+  for (const { name, port, batchSize, timeThreshold } of input) {
+    await yoloWorkersQueue.add({ name, port, batchSize, timeThreshold });
   }
-  console.log(
-    await yoloWorkersQueue.getJobs(["waiting", "active", "completed"])
-  );
 };
 
 setYoloWorkers(initial);
@@ -111,6 +113,7 @@ app.get("/yolo_services", async (_, res) => {
 });
 
 app.post("/yolo_services", async (req, res) => {
+  console.log(req.body);
   await setYoloWorkers(req.body);
   res.json(await getActiveYoloWorkers());
 });
