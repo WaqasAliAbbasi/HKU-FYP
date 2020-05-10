@@ -6,7 +6,6 @@ export const AppBar = ({ children }) => (
     <Navbar bg="dark" variant="dark">
       <Navbar.Brand href="/">Acumen</Navbar.Brand>
       <Nav className="mr-auto">
-        <Nav.Link href="/">Home</Nav.Link>
         <Nav.Link href="/image">Image Analysis</Nav.Link>
         <Nav.Link href="/stock">Stock</Nav.Link>
       </Nav>

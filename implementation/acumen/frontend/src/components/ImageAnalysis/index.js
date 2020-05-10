@@ -10,10 +10,10 @@ export const ImageAnalysis = () => {
   return (
     <Container fluid>
       <Row>
-        <Col>
+        <Col sm={8}>
           <ResourceDistribution />
         </Col>
-        <Col>
+        <Col sm={4}>
           <DispatchRequests
             setResults={setResults}
             processing={processing}

@@ -57,7 +57,7 @@ export const BatchControl = ({ serviceEndpoint }) => {
       });
   };
   return (
-    <Card.Body>
+    <Card.Body style={{ marginTop: "13px", borderTop: "1px solid #dee2e6" }}>
       <Form>
         {services.map(({ name, port, batchSize, timeThreshold, checked }) => (
           <Row key={port}>

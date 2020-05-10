@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Card, Tabs, Tab } from "react-bootstrap";
+import { Accordion, Card, Tabs, Tab, TabContent } from "react-bootstrap";
 
 import CurrentImageService from "./CurrentImageService.png";
 import { BatchControl } from "./BatchControl";
@@ -10,8 +10,8 @@ export const ResourceDistribution = () => {
     <Accordion defaultActiveKey="0">
       <Card>
         <Card.Header>
-          <Accordion.Toggle as="h5" eventKey="0">
-            Resource Distribution (Click to Collapse)
+          <Accordion.Toggle as="div" eventKey="0">
+            <h5 style={{ margin: 0 }}>Resource Distribution</h5>
           </Accordion.Toggle>
         </Card.Header>
         <Accordion.Collapse eventKey="0">
