@@ -3,7 +3,7 @@ import fs from "fs";
 
 import { YOLOWorker } from "./worker";
 import { filter } from "../utils";
-import { yoloWorkerQueue } from "../alpr/workerQueue";
+import { yoloWorkerQueue } from "../workerQueue";
 
 const returnYoloWorker = (yoloWorker: YOLOWorker) => {
   return yoloWorkerQueue.add(yoloWorker);

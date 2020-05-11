@@ -2,7 +2,6 @@ import grpc from "grpc";
 import { ALPRFileServerClient } from "../generated/proto/alpr/proto/alpr_grpc_pb";
 import { ALPRChunk } from "../generated/proto/alpr/proto/alpr_pb";
 import { splitBuffer, getIntBuffer } from "../utils";
-import { Results } from "../generated/proto/yolo/proto/yolo_pb";
 
 interface Input {
   name: string;

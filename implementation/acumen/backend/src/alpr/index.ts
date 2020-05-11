@@ -3,7 +3,7 @@ import fs from "fs";
 
 import { AlprWorker } from "./worker";
 import { filter } from "../utils";
-import { alprWorkerQueue } from "./workerQueue";
+import { alprWorkerQueue } from "../workerQueue";
 
 const returnAlprWorker = (alprWorker: AlprWorker) => {
   return alprWorkerQueue.add(alprWorker);
